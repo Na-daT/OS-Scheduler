@@ -3,10 +3,10 @@
 #include "circular_queue.c"
 
 // COORDINATE WITH PROCCESS GENERATOR DUDES:
-// ipc message check for correctness TO DO 
-// message.process structure -> convert message.process to QNode type
-// adjust constructors if neccesary 
-// forking parameters for scheduler and process
+// ipc message check for correctness TO DO (done)
+// message.process structure -> convert message.process to QNode,cnode,noderr type (done)
+// adjust constructors if neccesary (done)
+// forking parameters for scheduler and process 
 // modify file path for message queue key
 
 
@@ -34,7 +34,7 @@ void clockchange(int signum);
 
 int main(int argc, char *argv[])
 {
-    //initClk(); get clock instead of initalizate
+    initClk(); 
     int clk = getClk();
     
     printf("Sheduler started\n");
@@ -66,11 +66,10 @@ int main(int argc, char *argv[])
 
             while (rec_value != -1) //get all process that arrive at current clk time
             {
-                utilization += message.process->runtime;
-                printf("received: %d at time %d \n", message.process->id, getClk());
-                node* new = newnode(message.process->id, message.process->Processpriority, message.process->Pid,
-                message.process->arrival, message.process->runtime, 
-                message.process->remainingtime, message.process->waitingtime, waiting);
+                utilization += message.process.runtime;
+                printf("received: %d at time %d \n", message.process.id, getClk());
+                node* new = newnode(message.process.id, message.process.Processpriority, 
+                message.process.arrival, message.process.runtime,  waiting);
                 //needs to be checked or modified with message.process
                 QNode* newqnode = newNodeSJF(new);
                 if(pqHead == NULL) pqHead = newqnode; 
@@ -152,12 +151,12 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
             while (rec_value != -1) //get all process that arrive at current clk time
             {
                 newproccess_arrival_flag = 1;
-                utilization += message.process->runtime;
-                printf("received: %d at time %d \n", message.process->id, getClk());
+                utilization += message.process.runtime;
+                printf("received: %d at time %d \n", message.process.id, getClk());
 
-                node* new = newnode(message.process->id, message.process->Processpriority, message.process->Pid,
-                message.process->arrival, message.process->runtime, 
-                message.process->remainingtime, message.process->waitingtime, waiting);
+                node* new = newnode(message.process.id, message.process.Processpriority, 
+                message.process.arrival, message.process.runtime,  waiting);
+                
                 QNode* newqnode = newNodeHPF(new);
                 if(pqHead == NULL) pqHead =  newqnode; //needs to be checked or modified with message.process
                 else push(&pqHead, newqnode); 
@@ -264,11 +263,11 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
             int rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             while (rec != -1)
             {
-                printf("received: %d at time %d \n", message.process->id, getClk());
-                utilization += message.process->runtime;
-                node* new = newnode(message.process->id, message.process->Processpriority, message.process->Pid,
-                message.process->arrival, message.process->runtime, 
-                message.process->remainingtime, message.process->waitingtime, waiting);
+                printf("received: %d at time %d \n", message.process.id, getClk());
+                utilization += message.process.runtime;
+                node* new = newnode(message.process.id, message.process.Processpriority, 
+                message.process.arrival, message.process.runtime,  waiting);
+                
                 CNode* newcnode = newNodeRR(new);
                 enqueueCQ(circular_queue, newcnode);
                 
@@ -356,9 +355,10 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                             printf("received: %d at time %d \n", message.process.id, getClk());
                             utilization += message.process.runtime;
 
-                            node* new = newnode(message.process->id, message.process->Processpriority, message.process->Pid,
-                            message.process->arrival, message.process->runtime, 
-                            message.process->remainingtime, message.process->waitingtime, waiting);
+                            node* new = newnode(message.process.id, message.process.Processpriority, 
+                message.process.arrival, message.process.runtime,  waiting);
+                            message.process.arrival, message.process.runtime, 
+                            message.process.remainingtime, message.process.waitingtime, waiting);
                             CNode* newcnode = newNodeRR(new);
                             enqueueCQ(circular_queue, newcnode);
 

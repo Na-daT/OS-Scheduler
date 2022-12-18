@@ -57,17 +57,17 @@ typedef struct CNode {
     return temp;
 } */
 
-struct node* newnode(int id, int Processpriority, int Pid, int arrival, int runtime, 
-                int remainingtime, int waitingtime, enum status status)
+struct node* newnode(int id, int Processpriority, int arrival, int runtime, 
+                enum status status)
 {
     node* temp = (node*)malloc(sizeof(node));
     temp->id = id;
     temp->processpriority = Processpriority;
-    temp->processPID=Pid;
+    temp->processPID=0;
     temp->runtime;
-    temp->ReaminingTime=remainingtime;
+    temp->ReaminingTime=runtime;
     temp->arrivaltime=arrival;
-    temp->WaitingTime=waitingtime;
+    temp->WaitingTime=0;
     temp->Status=status;
     return temp;
 }
