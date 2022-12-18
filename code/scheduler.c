@@ -1,6 +1,6 @@
 #include "headers.h"
 #include "pqueue.c"
-#include "circular_queue.c"
+#include "cqueue.c"
 
 // COORDINATE WITH PROCCESS GENERATOR DUDES:
 // ipc message check for correctness TO DO (done)
@@ -28,9 +28,10 @@ int count;
 void ProcessTerminated(int signum);
 void clockchange(int signum);
 
-// open the output file
-    FILE *logfile = fopen("./scheduler.log", "w");
-    FILE *perf = fopen("./scheduler.perf", "w");
+
+    FILE *logfile;
+    FILE *perf;
+    
 
 int main(int argc, char *argv[])
 {
@@ -41,8 +42,10 @@ int main(int argc, char *argv[])
     // creating the message queue
     int keyid = ftok(".", 65);
     int msqid = msgget(keyid, 0666 | IPC_CREAT);
-
     
+    // open the output file
+    logfile = fopen("./scheduler.log", "w");
+    perf = fopen("./scheduler.perf", "w");
 
     // printing the header of output file
     fprintf(logfile, "#At time x process y state arr w total z remain y wait k\n");
@@ -252,7 +255,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
         circular_queue* circularque_head = create_circular_queue(process_count);
         CNode* Running = NULL;
         int quantum = atoi(argv[2]);
-
+        
         int flag = 0;
         int last_runclk = 0;
         int prevClk = getClk();
@@ -269,31 +272,31 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                 message.process.arrival, message.process.runtime,  waiting);
                 
                 CNode* newcnode = newNodeRR(new);
-                enqueueCQ(circular_queue, newcnode);
+                enqueueCQ(circularque_head, newcnode);
                 
                 rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
 
             //add RR LOGIC
             if(isEmptyCnode(&Running) && !isEmptyCQ(circularque_head)){
-                Running = peekCQ(circular_queue); //peek or dequeue ----------------
+                Running = peekCQ(circularque_head); //return pointer to process
                 count = 0; //used to countup to each quantum
-                printf("running process %d\n", Running->process.id);
+                printf("running process %d\n", Running->process->id);
                 quantum = atoi(argv[2]); //updating quantum cause see comment directly below
 
-                if (Running->ReaminingTime < quantum) // process's remaining time less than quantum so gonna run it for only that
+                if (Running->process->ReaminingTime < quantum) // process's remaining time less than quantum so gonna run it for only that
                 {
-                    quantum = Running->ReaminingTime;
+                    quantum = Running->process->ReaminingTime;
                 }
 
-                if (Running->processPID == -1)
+                if (Running->process->processPID == -1)
                 {
                     printf("forking\n");
                     int pid = fork();
                     if (pid == 0)
                     {
                         char *runtime_char = malloc(sizeof(char));
-                        sprintf(runtime_char, "%d", Running->process.runtime);
+                        sprintf(runtime_char, "%d", Running->process->runtime);
                         // printf("runtime %s of process %d time rn %d\n", runtime_char, getpid(), getClk());
                         char *arg[] = {runtime_char, NULL};
                         int execute = execv("./process.out", arg);
@@ -302,40 +305,41 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                         perror("The error is: \n");
                         exit(-1);
                     }
-                    Running->processPID = pid;
-                    Running->status = started;
-                    Running->WaitingTime = (getClk() - Running->process.arrvialtime) - (Running->process.runtime - Running->ReaminingTime);
+                    Running->process->processPID = pid;
+                    Running->process->Status = started;
+                    Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
                     raise(SIGSTOP);
-                    fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process.id, Running->process.arrvialtime, Running->process.runtime, Running->ReaminingTime, Running->WaitingTime);
+                    fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
                 }
                 else
                 {
                     printf("continuing process\n");
-                    kill(Running->processPID, SIGCONT);
-                    Running->status = resumed;
-                    Running->WaitingTime = (getClk() - Running->process.arrvialtime) - (Running->process.runtime - Running->ReaminingTime);
-                    fprintf(logfile, "At time %d process %d resumed arr %d total %d remain %d wait %d\n", getClk(), Running->process.id, Running->process.arrvialtime, Running->process.runtime, Running->ReaminingTime, Running->WaitingTime);
+                    kill(Running->process->processPID, SIGCONT); ///////////////////////----------------------------------
+                    Running->process->Status = resumed;
+                    Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
+                    fprintf(logfile, "At time %d process %d resumed arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
                 }
             }
+            //something is running
 
-            if (count == quantum)
+            if (!isEmptyCnode(&Running) && count == quantum) //reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
-                printf("rem time in sched %d\n", Running->ReaminingTime);
-                if (Running->ReaminingTime == 0)
+                printf("rem time in sched %d\n", Running->process->ReaminingTime);
+                if (Running->process->ReaminingTime == 0)
                 {
                     int status;
-                    int rec_child = waitpid(Running->processPID, &status, 0);
+                    int rec_child = waitpid(Running->process->processPID, &status, 0);
                     printf("rec child %d\n", rec_child);
-                    Running->status = finished;
+                    Running->process->Status = finished;
                     process_count--;
-                    avg_wait += Running->WaitingTime;
-                    wta += (float)(getClk() - Running->process.arrvialtime) / Running->process.runtime;
-                    Running->WaitingTime = (getClk() - Running->process.arrvialtime) - (Running->process.runtime - Running->ReaminingTime);
-                    fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process.id, Running->process.arrvialtime, Running->process.runtime, Running->WaitingTime, getClk() - Running->process.arrvialtime, (float)(getClk() - Running->process.arrvialtime) / Running->process.runtime);
-                    Running = NULL; ////--------------
-
-                    dequeueCQ(circularque_head); //-------------------
+                    avg_wait += Running->process->WaitingTime;
+                    wta += (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime;
+                    Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
+                    fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
+                    
+                    Running = NULL; 
+                    dequeueCQ(circularque_head); 
 
                     count=0;
                 }
@@ -343,10 +347,10 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                 {
                     if (!isEmptyCQ(circularque_head)) //switiching between process
                     {
-                        kill(Running->processPID, SIGSTOP);
-                        Running->status = stopped;
-                        Running->WaitingTime = (getClk() - Running->process.arrvialtime) - (Running->process.runtime - Running->ReaminingTime);
-                        fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running->process.id, Running->process.arrvialtime, Running->process.runtime, Running->ReaminingTime, Running->WaitingTime);
+                        kill(Running->process->processPID, SIGSTOP);
+                        Running->process->Status = stopped;
+                        Running->process->WaitingTime = (getClk() - Running->process->arrvialtime) - (Running->process->runtime - Running->process->ReaminingTime);
+                        fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrvialtime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
                         // enqueuing arrived processes
 
                         int rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
@@ -356,20 +360,20 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                             utilization += message.process.runtime;
 
                             node* new = newnode(message.process.id, message.process.Processpriority, 
-                message.process.arrival, message.process.runtime,  waiting);
-                            message.process.arrival, message.process.runtime, 
-                            message.process.remainingtime, message.process.waitingtime, waiting);
+                            message.process.arrival, message.process.runtime,  waiting);
+                            
                             CNode* newcnode = newNodeRR(new);
-                            enqueueCQ(circular_queue, newcnode);
+                            enqueueCQ(circularque_head, newcnode);
 
                             rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
                         } //check for new arrivals and add to tail
 
-                        //PQEnQueue(&ReadyQ, Running);
-                        Running = NULL; //last two lines check ----------------
-                        advanceCQhead(circular_queue);
+                        
+                        Running = NULL; 
+                        advanceCQhead(circularque_head); //move head once
+                        //if only one process then it will switch to itself
                     }
-                    else // rerun old process for another quantum since there is no one else
+                    /*else // rerun old process for another quantum since there is no one else
                     {
                         count = 0;
                         quantum = atoi(argv[2]);
@@ -377,7 +381,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                         {
                             quantum = Running->ReaminingTime;
                         }
-                    }
+                    } */
                 }
             }
         
