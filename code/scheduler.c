@@ -252,7 +252,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
         signal(SIGUSR1, SIG_IGN);
         signal(SIGUSR2, clockchange);
         int process_count = atoi(argv[3]);
-        circular_queue* circularque_head = create_circular_queue(process_count);
+        circular_queue* circularque = create_circular_queue(process_count);
         CNode* Running = NULL;
         int quantum = atoi(argv[2]);
         
@@ -271,15 +271,15 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                 node* new = newnode(message.process.id, message.process.Processpriority, 
                 message.process.arrival, message.process.runtime,  waiting);
                 
-                CNode* newcnode = newNodeRR(new);
-                enqueueCQ(circularque_head, newcnode);
+                //CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
+                enqueueCQ(circularque, new);
                 
                 rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
 
             //add RR LOGIC
-            if(isEmptyCnode(&Running) && !isEmptyCQ(circularque_head)){
-                Running = peekCQ(circularque_head); //return pointer to process
+            if(isEmptyCnode(&Running) && !isEmptyCQ(circularque)){
+                Running = peekCQ(circularque); //return pointer to process
                 count = 0; //used to countup to each quantum
                 printf("running process %d\n", Running->process->id);
                 quantum = atoi(argv[2]); //updating quantum cause see comment directly below
@@ -339,13 +339,13 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                     fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
                     
                     Running = NULL; 
-                    dequeueCQ(circularque_head); 
+                    dequeueCQ(circularque); 
 
                     count=0;
                 }
                 else
                 {
-                    if (!isEmptyCQ(circularque_head)) //switiching between process
+                    if (!isEmptyCQ(circularque)) //switiching between process
                     {
                         kill(Running->process->processPID, SIGSTOP);
                         Running->process->Status = stopped;
@@ -362,15 +362,15 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                             node* new = newnode(message.process.id, message.process.Processpriority, 
                             message.process.arrival, message.process.runtime,  waiting);
                             
-                            CNode* newcnode = newNodeRR(new);
-                            enqueueCQ(circularque_head, newcnode);
+                            //CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
+                            enqueueCQ(circularque, new);
 
                             rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
                         } //check for new arrivals and add to tail
 
                         
                         Running = NULL; 
-                        advanceCQhead(circularque_head); //move head once
+                        advanceCQhead(circularque); //move head once
                         //if only one process then it will switch to itself
                     }
                     /*else // rerun old process for another quantum since there is no one else

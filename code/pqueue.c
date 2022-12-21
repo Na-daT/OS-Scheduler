@@ -1,5 +1,5 @@
 #include "node.h"
-#include <stdbool.h>
+
 
 // Return the value at head
 /*int peek(QNode** head)

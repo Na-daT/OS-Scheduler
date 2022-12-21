@@ -1,5 +1,4 @@
 #include "node.h"
-#include <stdbool.h>
 
 // Create circular queue struct
 typedef struct circular_queue

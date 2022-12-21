@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 enum status{
     stopped = 0,
@@ -25,7 +26,7 @@ typedef struct node {
     enum status Status;
     //Status = waiting; 
     int quantum; //RR
-    int Live_Priority; //mlfl
+    //int Live_Priority; //mlfl //surprisngly don't need it
 
     // Lower values indicate higher Qpriority
     int Qpriority; 
@@ -45,6 +46,11 @@ typedef struct CNode {
     struct CNode* prev;
 } CNode;
 
+typedef struct MLFLNode {
+	//int data;
+    node* process; 
+    struct MLFLNode* next;
+} MLFLNode;
 
 /*QNode* newNodeRR(struct node* input)
 {
@@ -57,7 +63,7 @@ typedef struct CNode {
     return temp;
 } */
 
-struct node* newnode(int id, int Processpriority, int arrival, int runtime, 
+node* newnode(int id, int Processpriority, int arrival, int runtime, 
                 enum status status)
 {
     node* temp = (node*)malloc(sizeof(node));
@@ -72,7 +78,7 @@ struct node* newnode(int id, int Processpriority, int arrival, int runtime,
     return temp;
 }
 
-QNode* newNodeRR(struct node* input)
+CNode* newNodeRR(struct node* input)
 {
     
     CNode* temp = ( CNode*)malloc(sizeof(CNode));
@@ -102,6 +108,17 @@ QNode* newNodeHPF(struct node* input)
     QNode* temp = ( QNode*)malloc(sizeof(QNode));
     temp->process = input;
     temp->process->Qpriority = input->processpriority;
+    temp->process->Status = waiting;
+    temp->next = NULL;
+
+    return temp;
+}
+
+MLFLNode* newNodeMLFL(struct node* input)
+{
+    
+    MLFLNode* temp = ( MLFLNode*)malloc(sizeof(MLFLNode));
+    temp->process = input;
     temp->process->Status = waiting;
     temp->next = NULL;
 
