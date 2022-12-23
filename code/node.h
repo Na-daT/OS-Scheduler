@@ -52,16 +52,6 @@ typedef struct MLFLNode {
     struct MLFLNode* next;
 } MLFLNode;
 
-/*QNode* newNodeRR(struct node* input)
-{
-    
-    QNode* temp = ( QNode*)malloc(sizeof(QNode));
-    temp->process = input;
-    //temp->process->Qpriority = input->Qpriority;
-    temp->next = NULL;
-
-    return temp;
-} */
 
 node* newnode(int id, int Processpriority, int arrival, int runtime, 
                 enum status status)
@@ -69,7 +59,7 @@ node* newnode(int id, int Processpriority, int arrival, int runtime,
     node* temp = (node*)malloc(sizeof(node));
     temp->id = id;
     temp->processpriority = Processpriority;
-    temp->processPID=0;
+    temp->processPID=-1;
     temp->runtime;
     temp->ReaminingTime=runtime;
     temp->arrivaltime=arrival;
@@ -78,7 +68,7 @@ node* newnode(int id, int Processpriority, int arrival, int runtime,
     return temp;
 }
 
-CNode* newNodeRR(struct node* input)
+CNode* newNodeRR(node* input)
 {
     
     CNode* temp = ( CNode*)malloc(sizeof(CNode));
@@ -90,7 +80,7 @@ CNode* newNodeRR(struct node* input)
     return temp;
 }
 
-QNode* newNodeSJF(struct node* input)
+QNode* newNodeSJF(node* input)
 {
     
     QNode* temp = ( QNode*)malloc(sizeof(QNode));
@@ -102,7 +92,7 @@ QNode* newNodeSJF(struct node* input)
     return temp;
 }
 
-QNode* newNodeHPF(struct node* input)
+QNode* newNodeHPF(node* input)
 {
     
     QNode* temp = ( QNode*)malloc(sizeof(QNode));
@@ -114,7 +104,7 @@ QNode* newNodeHPF(struct node* input)
     return temp;
 }
 
-MLFLNode* newNodeMLFL(struct node* input)
+MLFLNode* newNodeMLFL(node* input)
 {
     
     MLFLNode* temp = ( MLFLNode*)malloc(sizeof(MLFLNode));
@@ -123,4 +113,14 @@ MLFLNode* newNodeMLFL(struct node* input)
     temp->next = NULL;
 
     return temp;
+}
+
+void freeinsideCNODE(CNode* cnode){
+    if(cnode->process != NULL) free(cnode->process);
+}
+void freeinsideQNODE(QNode* qnode){
+    if(qnode->process != NULL) free(qnode->process);
+}
+void freeinsideMLFL(MLFLNode* MLFLnode){
+    if(MLFLnode->process != NULL) free(MLFLnode->process);
 }

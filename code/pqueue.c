@@ -71,6 +71,7 @@ void destroyPQ(QNode *pq)
     while (temp != NULL)
     {
         QNode *next = temp->next;
+        freeinsideQNODE(temp);
         free(temp);
         temp = next;
     }

@@ -22,7 +22,7 @@ circular_queue *create_circular_queue(size_t size)
 void destroyCQ(circular_queue *cq)
 {
     while (cq->Head)
-        dequeueCQ(cq);
+        dequeueCQ(cq); //this is equiv to free inside
 
     free(cq);
 }
@@ -35,8 +35,7 @@ void advanceCQhead(circular_queue *cq){
 // Enqueue
 void enqueueCQ(circular_queue *cq, node *data)
 {
-    CNode *new_node = (CNode *)malloc(sizeof(CNode));
-    new_node->process = data;
+    CNode *new_node = newNodeRR(data);
 
     if (cq->Head != NULL)
     {
@@ -73,6 +72,7 @@ node* dequeueCQ(circular_queue *cq)
         temp->next->prev = temp->prev;
         cq->Head = temp->next;
     }
+    freeinsideCNODE(temp);
     free(temp);
     cq->length -= 1;
     return data;

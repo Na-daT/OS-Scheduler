@@ -3,7 +3,7 @@
 typedef struct linkedlist
 {
     MLFLNode* Head;
-    int prio;
+    //int prio;
 } linkedlist;
 
 
@@ -14,10 +14,9 @@ linkedlist* create_linkedlist()
     return cq;
 }
 
-void enqueuelinkedlist(linkedlist *ll, MLFLNode *data)
+void enqueuelinkedlist(linkedlist *ll, node *data)
 {
-    MLFLNode *new_node = (MLFLNode *)malloc(sizeof(MLFLNode));
-    new_node->process = data;
+    MLFLNode* new_node = newNodeMLFL(data);
 
     if (ll->Head != NULL)
     {
@@ -34,4 +33,17 @@ void enqueuelinkedlist(linkedlist *ll, MLFLNode *data)
         ll->Head = new_node;
     }
     
+}
+
+void destroylinkedlist(linkedlist *ll)
+{
+    MLFLNode *temp = ll->Head;
+    while (temp != NULL)
+    {
+        MLFLNode *next = temp->next;
+        freeinsideMLFL(temp);
+        free(temp);
+        temp = next;
+    }
+    free(ll);
 }
