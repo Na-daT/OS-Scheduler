@@ -15,33 +15,26 @@ chained_linkedlist* create_chainedlinkedlist(linkedlist* list, chained_linkedlis
     return cll;
 }
 
-void advancehead_singlechain(chained_linkedlist* currentchain, MLFLNode* currentlyrunning){
+void advancehead_mlfl(chained_linkedlist* currentchain, MLFLNode* currentlyrunning){
     // head0 1 process // head0 0 process 
     // head1 0 process
     // head2 1 process //corner case
     // a priority level in the middle with no processes
 
-    //also responsible for freeing memory
-    //what happens if process at head is finished? (handled after switchcase in schedular)
-    while(currentlyrunning->next && currentlyrunning->next->process->Status == finished){ 
-        MLFLNode* temp = currentlyrunning->next;
-        currentlyrunning -> next = temp -> next;
-        freeinsideMLFL(temp);
-        free(temp);
-    }
-
     if(currentlyrunning->next){ //first null
         currentlyrunning = currentlyrunning->next;
+        return;
     }
-    else if(currentchain -> next) { //second null
-        currentchain = currentchain -> next;
-        while(currentchain-> next != NULL && currentchain -> listHead -> Head == NULL) currentchain = currentchain -> next; 
-        //deal with corner case
-        currentlyrunning = currentchain -> listHead -> Head;
+    else while(currentchain -> next) { //second null
+        currentchain = currentchain ->next;
+        if (currentchain->listHead->Head != NULL){
+            currentlyrunning = currentchain->listHead->Head;
+            return;
+        }
     } 
-    else {
+    
         currentlyrunning = NULL;
-    }
+    
     // if currentlyrunning returns null then we have hit the 'double null' and then we are at the end of all chains
     // and we should run lesser prio chain next ex: head0 -> head1 (using switch case inside scheduler part)
 }
@@ -176,4 +169,46 @@ void enqueueMLFL(MLFL* mlfl, node* n){
                         printf("Out of range");
                         break;
                 }
+}
+
+void clearfinishedprocesses(MLFL* mlfl, int prio){
+    
+    //head0 1 unfinished
+    //head1 1 finished 0 unfinished
+    //corner case with dequeueing
+
+    if(prio == 0) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist0);
+    if(prio == 1) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist1);
+    if(prio == 2) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2);
+    if(prio == 3) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3);
+    if(prio == 4) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist4);
+    if(prio == 5) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist5);
+    if(prio == 6) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist6);
+    if(prio == 7) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist7);
+    if(prio == 8) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist8);
+    if(prio == 9) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist9);
+    if(prio == 10) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist10);
+}
+
+void clearfinishedprocesses_in_a_priolevel(linkedlist* level){
+    if(level->Head && level->Head->process->Status == finished){
+        MLFLNode* temp = level->Head;
+        level -> Head = temp -> next;
+        freeinsideMLFL(temp);
+        free(temp);
+        return;
+    } //dealing with head is finished
+
+    MLFLNode* temp = level->Head->next;
+    MLFLNode* prev = level->Head; //clearing rest of list
+    while(temp){
+        if(temp->next->process->Status == finished){
+                prev->next = temp->next;
+                freeinsideMLFL(temp);
+                free(temp);
+                return;
+        }
+        prev = temp;
+        temp = temp ->next; 
+    }
 }

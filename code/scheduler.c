@@ -380,7 +380,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
         int quantum = atoi(argv[2]);
 
         chained_linkedlist* currentchain;
-        MLFLNode* running;
+        MLFLNode* Running;
         bool endofthisqueuelevel = true;
         bool process_switched = false;
         int currentchain_index = 0;
@@ -442,18 +442,9 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                         printf("Out of range");
                         break;
                 }
-                //dealing with the case of process at head is finished
-                if(currentchain-> listHead -> Head -> status == finished){
-                    running = Head;
-                    MLFLNode* temp = Head;
-
-                    advancehead_singlechain(currentchain, running);
-                    
-                    freeinsideMLFL(temp);
-                    free(temp);
-                }
-
-                if(running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
+                Running = currentchain->listHead->Head;
+                if(Running == NULL) advancehead_mlfl(currentchain, Running); //if this current level is empty, go grab next node
+                if(Running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
                     currentchain_index = currentchain_index +1 % 11;
                     endofthisqueuelevel = true; // end of this queue
                 }
@@ -463,7 +454,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
             }
             //actual running of a process happens here
 
-            if(running != NULL && process_switched){ 
+            if(Running != NULL && process_switched){ 
                 endofthisqueuelevel = false;
                 process_switched = false;
                 count = 0; //used to countup to each quantum
@@ -509,7 +500,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
 
             /////////
 
-            if (running != NULL && count == quantum) //reached end of quantum
+            if (Running != NULL && count == quantum) //reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
                 printf("rem time in sched %d\n", Running->process->ReaminingTime);
@@ -526,9 +517,11 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                     Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
                     fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
                     
+                    clearfinishedprocesses(mlfl, Running->process->processpriority);
+
                     process_switched = true;
-                    advancehead_singlechain(currentchain, running);
-                    if(running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
+                    advancehead_mlfl(currentchain, Running);
+                    if(Running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
                         currentchain_index = currentchain_index +1 % 11;
                         endofthisqueuelevel = true;
                     }
@@ -538,8 +531,8 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                     //switiching between process
                         kill(Running->process->processPID, SIGSTOP);
                         Running->process->Status = stopped;
-                        Running->process->WaitingTime = (getClk() - Running->process->arrvialtime) - (Running->process->runtime - Running->process->ReaminingTime);
-                        fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrvialtime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
+                        Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
+                        fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
 
                         int rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
                         while (rec != -1)
@@ -556,8 +549,8 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                         } 
 
                         process_switched = true;
-                        advancehead_singlechain(currentchain, running);
-                        if(running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
+                        advancehead_mlfl(currentchain, Running);
+                        if(Running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
                             currentchain_index = currentchain_index +1 % 11;
                             endofthisqueuelevel = true; 
                         }
