@@ -28,18 +28,18 @@ int main(int argc, char *argv[])
     }
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
     // 3. Initiate and create the scheduler and clock processes.
-    
+    initClk();
     pid_t clockProcess = fork();
     if (clockProcess == 0) // clk process
     {
         // clk code
         // clk.out
-        char *argv[] = {"./clk.out", 0};
-        execve(argv[0], &argv[0], NULL); // mmkn nst3ml execve lw masht8ltsh!!
+        char *argv2[] = {"./clk.out", 0};
+        execve(argv2[0], &argv2[0], NULL); // mmkn nst3ml execve lw masht8ltsh!!
     }
-    printf("clock process created\n");
+    printf("processgen: clock process created\n");
 
-    printf("create scheduler\n");
+    printf("processgen: create scheduler\n");
     pid_t schedulerProcess = fork();
     if (schedulerProcess == 0) // scheduler process
        {
@@ -47,30 +47,30 @@ int main(int argc, char *argv[])
         // scheduler.out
         char * count = malloc(10);
         sprintf(count, "%ld", numberOfProcesses);
-        char *argv[] = {"./scheduler.out", argv[1], argv[2], count, 0};
+        char *argv2[] = {"./scheduler.out", argv[1], argv[2], count, 0};
         printf("right before execve\n");
-        execve(argv[0], &argv[0], NULL);
+        execve(argv2[0], &argv2[0], NULL);
        }
 
-    printf("scheduler process created\n");
+    printf("processgen: scheduler process created\n");
 
-    initClk();
+    
     // 4. Use this function after creating the clock process to initialize clock.
 
-    key_t msgKey = ftok("./clk.c", 'Z');
+    key_t msgKey = ftok(".", 65);
     messageQueue = msgget(msgKey, 0666 | IPC_CREAT);
     if (messageQueue == -1)
     {
         perror("Error in creating message queue");
         exit(-1);
     }
-
+    printf("creating message queue \n");
     while (processQueue->size > 0)
     {
         Process *processP = peekCQ(processQueue);
         Process p = *processP;
-        while (getClk() < p.arrival)
-            ;
+        while (getClk() < p.arrival);
+        printf("p arrived \n");
         dequeueCQ(processQueue);
         free(processP);
 
@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
             kill(schedulerProcess, SIGCONT);
         }
     }
-
-    wait(NULL);
+    printf("processgen: sending all processes done \n");
+    wait(NULL); //--------------
     clearResources();
     destroyClk(true);
     // To get time use this function.

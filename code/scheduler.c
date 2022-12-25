@@ -34,9 +34,10 @@ FILE *perf;
 int main(int argc, char *argv[])
 {
     printf("Sheduler started\n");
-
+    printf("scheduler args count %d \n", argc);
+    printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
     initClk();
-    int clk = getClk();
+    //int clk = getClk();
 
     // creating the message queue
     int keyid = ftok(".", 65);
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
     ///////////////////////////////// SJF //non premitave
     if (atoi(argv[1]) == 1)
     {
+        printf("starting sfj");
         signal(SIGUSR1, ProcessTerminated);
         signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
         // so its useless for this and should be ignored
@@ -69,6 +71,7 @@ int main(int argc, char *argv[])
 
             while (rec_value != -1) // get all process that arrive at current clk time
             {
+                printf("reciving sjf \n");
                 utilization += message.process.runtime;
                 printf("received: %d at time %d \n", message.process.id, getClk());
                 node *new = newnode(message.process.id, message.process.priority,
