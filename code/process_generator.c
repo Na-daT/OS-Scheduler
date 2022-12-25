@@ -9,12 +9,16 @@ size_t numberOfProcesses = 0;
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
-        return fprintf(stderr, "Incorrect input\n");
+    if (argc != 3)
+        {
+            printf("count: %d\n", argc);
+            return fprintf(stderr, "Incorrect input\n");
+        }
 
+    printf("The process generator has started\n");
     signal(SIGINT, clearResources);
     // TODO Initialization
-
+    printf("signal initilized\n");
     // 1. Read the input file processes.txt and get the processes and their parameters.
     processQueue = create_circular_queue(sizeof(Process));
     if (!readFile("./processes.txt"))
@@ -25,16 +29,17 @@ int main(int argc, char *argv[])
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
 
     // 3. Initiate and create the scheduler and clock processes.
+     pid_t schedulerProcess = fork();
+    if (schedulerProcess == 0) // scheduler process
+        execl("bin/scheduler.out", "scheduler.out", argv[1], argv[2], numberOfProcesses, NULL);
+
     pid_t clockProcess = fork();
     if (clockProcess == 0) // clk process
         execl("bin/clk.out", "clk.out", NULL);
 
-    pid_t schedulerProcess = fork();
-    if (schedulerProcess == 0) // scheduler process
-        execl("bin/scheduler.out", "scheduler.out", argv[1], argv[2], numberOfProcesses, NULL);
-
-    // 4. Use this function after creating the clock process to initialize clock.
     initClk();
+    // 4. Use this function after creating the clock process to initialize clock.
+
     key_t msgKey = ftok("./clk.c", 'Z');
     messageQueue = msgget(msgKey, 0666 | IPC_CREAT);
     if (messageQueue == -1)
@@ -90,6 +95,7 @@ void clearResources()
 
 bool readFile(char *path)
 {
+    printf("Reading file ");
     FILE *inFile = fopen(path, "r");
     if (inFile == NULL)
         return false;
