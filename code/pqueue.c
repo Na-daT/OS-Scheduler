@@ -1,5 +1,7 @@
+#ifndef NODE_H
+#define NODE_H
 #include "node.h"
-
+#endif
 
 // Return the value at head
 /*int peek(QNode** head)

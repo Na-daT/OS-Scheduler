@@ -1,8 +1,10 @@
-#include "headers.h"
 #include "pqueue.c"
-#include "cqueue.c"
 #include "MLFL.c"
-
+#include "cqueue.c"
+#ifndef HEADERS_H
+#define HEADERS_H
+#include "headers.h"
+#endif
 // COORDINATE WITH PROCCESS GENERATOR DUDES:
 // forking parameters for scheduler and process 
 // modify file path for message queue key

@@ -1,5 +1,7 @@
+#ifndef NODE_H
+#define NODE_H
 #include "node.h"
-
+#endif 
 typedef struct linkedlist
 {
     MLFLNode* Head;

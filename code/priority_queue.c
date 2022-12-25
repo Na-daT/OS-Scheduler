@@ -1,6 +1,3 @@
-#ifndef PRIORITY_QUEUE_H
-#define PRIORITY_QUEUE_H
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -104,5 +101,3 @@ bool peekPQ(priority_queue *pq, void **data)
     memcpy(*data, pq->Head->data, pq->size);
     return true;
 }
-
-#endif

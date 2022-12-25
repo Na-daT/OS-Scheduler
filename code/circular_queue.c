@@ -8,16 +8,16 @@
 #include "headers.h"
 
 // Create node struct
-typedef struct node
+typedef struct circular_node
 {
     Process *data;
-    struct node *next, *prev;
-} node;
+    struct circular_node *next, *prev;
+} circular_node;
 
 // Create circular queue struct
 typedef struct circular_queue
 {
-    node *Head;
+    circular_node *Head;
     size_t size;
     int length;
 } circular_queue;
@@ -35,7 +35,7 @@ circular_queue *create_circular_queue(size_t size)
 // Enqueue
 void enqueueCQ(circular_queue *cq, Process *data)
 {
-    node *new_node = (node *)malloc(sizeof(node));
+    circular_node *new_node = (circular_node *)malloc(sizeof(circular_node));
     new_node->data = data;
 
     if (cq->Head != NULL)
@@ -60,7 +60,7 @@ Process *dequeueCQ(circular_queue *cq)
     {
         return NULL;
     }
-    node *temp = cq->Head;
+    circular_node *temp = cq->Head;
     Process *data = temp->data;
     if (cq->Head->next == cq->Head)
     {
@@ -84,6 +84,7 @@ void destroyCQ(circular_queue *cq)
 
     free(cq);
 }
+
 
 // Front
 Process *peekCQ(circular_queue *cq)
