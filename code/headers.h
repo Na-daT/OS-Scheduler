@@ -16,7 +16,6 @@ typedef short bool;
 #define false 0
 
 #define SHKEY 300
-
 ///==============================
 // don't mess with this variable//
 int *shmaddr; //
@@ -27,11 +26,17 @@ int getClk()
     return *shmaddr;
 }
 
+struct msgbuffer
+{
+    long mtype;
+    Process process;
+}
 /*
  * All processes call this function at the beginning to establish communication between them and the clock module.
  * Again, remember that the clock is only emulation!
  */
-void initClk()
+void
+initClk()
 {
     int shmid = shmget(SHKEY, 4, 0444);
     while ((int)shmid == -1)
@@ -61,7 +66,6 @@ void destroyClk(bool terminateAll)
     }
 }
 
-const char *processFormatString = "%d\t%d\t%d\t%d=\n";
 typedef struct Process
 {
     int id;
