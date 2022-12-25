@@ -130,64 +130,45 @@ void destroymlfl(MLFL* mlfl){
 
 void enqueueMLFL(MLFL* mlfl, node* n){
     if(n == NULL || mlfl == NULL) return;
-    MLFLNode* new =  newNodeMLFL(n);
+    //MLFLNode* new =  newNodeMLFL(n);
     switch (n->processpriority) {
                     case 0:
-                        enqueuelinkedlist(mlfl->linkedlist0, new);
+                        enqueuelinkedlist(mlfl->linkedlist0, n);
                         break;
                     case 1:
-                        enqueuelinkedlist(mlfl->linkedlist1, new);
+                        enqueuelinkedlist(mlfl->linkedlist1, n);
                         break;
                     case 2:
-                        enqueuelinkedlist(mlfl->linkedlist2, new);
+                        enqueuelinkedlist(mlfl->linkedlist2, n);
                         break;
                     case 3:
-                        enqueuelinkedlist(mlfl->linkedlist3, new);
+                        enqueuelinkedlist(mlfl->linkedlist3, n);
                         break;
                     case 4:
-                        enqueuelinkedlist(mlfl->linkedlist4, new);
+                        enqueuelinkedlist(mlfl->linkedlist4, n);
                         break;
                     case 5:
-                        enqueuelinkedlist(mlfl->linkedlist5, new);
+                        enqueuelinkedlist(mlfl->linkedlist5, n);
                         break;
                     case 6:
-                        enqueuelinkedlist(mlfl->linkedlist6, new);
+                        enqueuelinkedlist(mlfl->linkedlist6, n);
                         break;
                     case 7:
-                        enqueuelinkedlist(mlfl->linkedlist7, new);
+                        enqueuelinkedlist(mlfl->linkedlist7, n);
                         break;
                     case 8:
-                        enqueuelinkedlist(mlfl->linkedlist8, new);
+                        enqueuelinkedlist(mlfl->linkedlist8, n);
                         break;
                     case 9:
-                        enqueuelinkedlist(mlfl->linkedlist9, new);
+                        enqueuelinkedlist(mlfl->linkedlist9, n);
                         break;
                     case 10:
-                        enqueuelinkedlist(mlfl->linkedlist10, new);
+                        enqueuelinkedlist(mlfl->linkedlist10, n);
                         break;
                     default:
                         printf("Out of range");
                         break;
                 }
-}
-
-void clearfinishedprocesses(MLFL* mlfl, int prio){
-    
-    //head0 1 unfinished
-    //head1 1 finished 0 unfinished
-    //corner case with dequeueing
-
-    if(prio == 0) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist0);
-    if(prio == 1) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist1);
-    if(prio == 2) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2);
-    if(prio == 3) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3);
-    if(prio == 4) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist4);
-    if(prio == 5) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist5);
-    if(prio == 6) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist6);
-    if(prio == 7) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist7);
-    if(prio == 8) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist8);
-    if(prio == 9) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist9);
-    if(prio == 10) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist10);
 }
 
 void clearfinishedprocesses_in_a_priolevel(linkedlist* level){
@@ -212,3 +193,23 @@ void clearfinishedprocesses_in_a_priolevel(linkedlist* level){
         temp = temp ->next; 
     }
 }
+
+void clearfinishedprocesses(MLFL* mlfl, int prio){
+    
+    //head0 1 unfinished
+    //head1 1 finished 0 unfinished
+    //corner case with dequeueing
+
+    if(prio == 0) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist0);
+    if(prio == 1) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist1);
+    if(prio == 2) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2);
+    if(prio == 3) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3);
+    if(prio == 4) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist4);
+    if(prio == 5) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist5);
+    if(prio == 6) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist6);
+    if(prio == 7) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist7);
+    if(prio == 8) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist8);
+    if(prio == 9) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist9);
+    if(prio == 10) clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist10);
+}
+

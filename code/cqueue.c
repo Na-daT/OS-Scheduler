@@ -20,14 +20,6 @@ circular_queue *create_circular_queue(size_t size)
     return cq;
 }
 
-// destroy circular queue
-void destroyCQ(circular_queue *cq)
-{
-    while (cq->Head)
-        dequeueCQ(cq); //this is equiv to free inside
-
-    free(cq);
-}
 
 
 void advanceCQhead(circular_queue *cq){
@@ -100,4 +92,13 @@ bool isEmptyCQ(circular_queue *cq)
 bool isEmptyCnode(CNode *cq)
 {
     return cq->process == NULL;
+}
+
+// destroy circular queue
+void destroyCQ(circular_queue *cq)
+{
+    while (cq->Head)
+        dequeueCQ(cq); //this is equiv to free inside
+
+    free(cq);
 }

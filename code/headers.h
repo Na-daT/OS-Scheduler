@@ -1,5 +1,4 @@
-#ifndef HEADERS_H
-#define HEADERS_H
+
 #include <stdio.h> //if you don't use scanf/printf change this include
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -13,7 +12,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdbool.h>
-#include "node.h"
 
 /*typedef short bool;
 #define true 1
@@ -85,4 +83,4 @@ typedef enum Scheduling_Algorithm
     MFL
 } Scheduling_Algorithm;
 
-#endif
+

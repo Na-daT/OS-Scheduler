@@ -5,6 +5,7 @@ void clearResources();
 bool readFile(char *path);
 circular_queue *processQueue;
 int messageQueue;
+size_t numberOfProcesses = 0;
 
 int main(int argc, char *argv[])
 {
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 
     pid_t schedulerProcess = fork();
     if (schedulerProcess == 0) // scheduler process
-        execl("bin/scheduler.out", "scheduler.out", argv[1], NULL);
+        execl("bin/scheduler.out", "scheduler.out", argv[1], argv[2], numberOfProcesses, NULL);
 
     // 4. Use this function after creating the clock process to initialize clock.
     initClk();
@@ -94,7 +95,7 @@ bool readFile(char *path)
         return false;
 
     char *line;
-    size_t len, numberOfProcesses = 0;
+    size_t len; //, numberOfProcesses = 0;
     while (getline(&line, &len, inFile) != -1)
         if (line[0] != '#')
         {
