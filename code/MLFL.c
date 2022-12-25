@@ -202,7 +202,7 @@ void clearfinishedprocesses_in_a_priolevel(linkedlist* level){
     MLFLNode* temp = level->Head->next;
     MLFLNode* prev = level->Head; //clearing rest of list
     while(temp){
-        if(temp->next->process->Status == finished){
+        if(temp->process->Status == finished){
                 prev->next = temp->next;
                 freeinsideMLFL(temp);
                 free(temp);
