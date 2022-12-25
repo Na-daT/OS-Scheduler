@@ -7,17 +7,17 @@
 #include <string.h>
 
 // Create node struct
-typedef struct node
+typedef struct PQ_node
 {
     void *data;
     int priority;
-    struct node *next;
-} node;
+    struct PQ_node *next;
+} PQ_node;
 
 // Create priority queue struct
 typedef struct priority_queue
 {
-    node *Head;
+    PQ_node *Head;
     size_t size;
     int length;
 } priority_queue;
@@ -35,10 +35,10 @@ priority_queue *create_priority_queue(size_t size)
 // destroy priority queue
 void destroyPQ(priority_queue *pq)
 {
-    node *temp = pq->Head;
+    PQ_node *temp = pq->Head;
     while (temp != NULL)
     {
-        node *next = temp->next;
+        PQ_node *next = temp->next;
         free(temp);
         temp = next;
     }
@@ -48,7 +48,7 @@ void destroyPQ(priority_queue *pq)
 // Enqueue
 void enqueuePQ(priority_queue *pq, void *data, int priority)
 {
-    node *new_node = (node *)malloc(sizeof(node));
+    PQ_node *new_node = (PQ_node *)malloc(sizeof(PQ_node));
     new_node->data = malloc(pq->size);
     new_node->priority = priority;
     new_node->next = NULL;
@@ -68,7 +68,7 @@ void enqueuePQ(priority_queue *pq, void *data, int priority)
         return;
     }
 
-    node *start = pq->Head;
+    PQ_node *start = pq->Head;
 
     while (start->next != NULL && start->next->priority < priority)
     {
@@ -86,7 +86,7 @@ bool dequeuePQ(priority_queue *pq, void **data)
     {
         return false;
     }
-    node *temp = pq->Head;
+    PQ_node *temp = pq->Head;
     pq->Head = pq->Head->next;
     memcpy(*data, temp->data, pq->size);
     free(temp);

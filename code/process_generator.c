@@ -1,10 +1,9 @@
-#include "headers.h"
 #include "priority_queue.c"
 #include "circular_queue.c"
 
 void clearResources();
 bool readFile(char *path);
-circular_queue *processQueue = create_circular_queue(sizeof(Process));
+circular_queue *processQueue;
 int messageQueue;
 
 int main(int argc, char *argv[])
@@ -16,7 +15,7 @@ int main(int argc, char *argv[])
     // TODO Initialization
 
     // 1. Read the input file processes.txt and get the processes and their parameters.
-
+    processQueue = create_circular_queue(sizeof(Process));
     if (!readFile("./processes.txt"))
     {
         perror("Error in file, please try again");
@@ -47,7 +46,7 @@ int main(int argc, char *argv[])
     {
         Process *processP = peekCQ(processQueue);
         Process p = *processP;
-        while (getClk() < p->arrivaltime)
+        while (getClk() < p.arrival)
             ;
         dequeueCQ(processQueue);
         free(processP);
@@ -83,7 +82,7 @@ void clearResources()
 {
     // TODO Clears all resources in case of interruption
     printf("The process generator has stopped\n");
-    msgctl(messageQueue, IPC_RMID, null);
+    msgctl(messageQueue, IPC_RMID, NULL);
     destroyClk(true);
     exit(0);
 }
@@ -101,7 +100,7 @@ bool readFile(char *path)
         {
             numberOfProcesses++;
             Process *p = malloc(sizeof(*p));
-            sscanf(line, "%d\t%d\t%d\t%d=\n", &p->id, &p->arrivaltime, &p->remainingtime, &p->priority);
+            sscanf(line, "%d\t%d\t%d\t%d=\n", &p->id, &p->arrival, &p->runtime, &p->priority);
             enqueueCQ(processQueue, p);
         }
 

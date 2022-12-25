@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <headers.h>
+#include "headers.h"
 
 // Create node struct
 typedef struct node
@@ -30,15 +30,6 @@ circular_queue *create_circular_queue(size_t size)
     cq->size = size;
     cq->length = 0;
     return cq;
-}
-
-// destroy circular queue
-void destroyCQ(circular_queue *cq)
-{
-    while (cq->Head)
-        dequeueCQ(cq);
-
-    free(cq);
 }
 
 // Enqueue
@@ -83,6 +74,15 @@ Process *dequeueCQ(circular_queue *cq)
     }
     free(temp);
     return data;
+}
+
+// destroy circular queue
+void destroyCQ(circular_queue *cq)
+{
+    while (cq->Head)
+        dequeueCQ(cq);
+
+    free(cq);
 }
 
 // Front
