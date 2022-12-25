@@ -263,7 +263,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
             }
 
             //add RR LOGIC
-            if(isEmptyCnode(&Running) && !isEmptyCQ(circularque)){
+            if(isEmptyCnode(Running) && !isEmptyCQ(circularque)){
                 Running = peekCQ(circularque); //return pointer to process
                 count = 0; //used to countup to each quantum
                 printf("running process %d\n", Running->process->id);
@@ -307,7 +307,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
             }
             //something is running
 
-            if (!isEmptyCnode(&Running) && count == quantum) //reached end of quantum
+            if (!isEmptyCnode(Running) && count == quantum) //reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
                 printf("rem time in sched %d\n", Running->process->ReaminingTime);
@@ -400,7 +400,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                 enqueueMLFL(mlfl, new);
                 
                 rec = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                process_switched = true;
+                //process_switched = true;
             }
 
             if(endofthisqueuelevel){
@@ -442,8 +442,9 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                         printf("Out of range");
                         break;
                 }
+                process_switched = true;
                 Running = currentchain->listHead->Head;
-                if(Running == NULL) advancehead_mlfl(currentchain, Running); //if this current level is empty, go grab next node
+                if(Running == NULL) grabnextnode_mlfl(currentchain, Running); //if this current level is empty, go grab next node
                 if(Running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
                     currentchain_index = currentchain_index +1 % 11;
                     endofthisqueuelevel = true; // end of this queue
@@ -457,6 +458,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
             if(Running != NULL && process_switched){ 
                 endofthisqueuelevel = false;
                 process_switched = false;
+                
                 count = 0; //used to countup to each quantum
                 printf("running process %d\n", Running->process->id);
                 quantum = atoi(argv[2]); //updating quantum cause see comment directly below
@@ -520,7 +522,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                     clearfinishedprocesses(mlfl, Running->process->processpriority);
 
                     process_switched = true;
-                    advancehead_mlfl(currentchain, Running);
+                    grabnextnode_mlfl(currentchain, Running);
                     if(Running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
                         currentchain_index = currentchain_index +1 % 11;
                         endofthisqueuelevel = true;
@@ -549,7 +551,7 @@ fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %
                         } 
 
                         process_switched = true;
-                        advancehead_mlfl(currentchain, Running);
+                        grabnextnode_mlfl(currentchain, Running);
                         if(Running == NULL) { //hit that 'double null' so that level of the queue is done and need to advance to next level
                             currentchain_index = currentchain_index +1 % 11;
                             endofthisqueuelevel = true; 

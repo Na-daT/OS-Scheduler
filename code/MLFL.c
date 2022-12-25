@@ -15,7 +15,7 @@ chained_linkedlist* create_chainedlinkedlist(linkedlist* list, chained_linkedlis
     return cll;
 }
 
-void advancehead_mlfl(chained_linkedlist* currentchain, MLFLNode* currentlyrunning){
+void grabnextnode_mlfl(chained_linkedlist* currentchain, MLFLNode* currentlyrunning){
     // head0 1 process // head0 0 process 
     // head1 0 process
     // head2 1 process //corner case
