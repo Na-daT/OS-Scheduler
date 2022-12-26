@@ -8,6 +8,10 @@ void handler(int signum);
 
 int main(int argc, char *argv[])
 {
+    if(argc != 4){
+        printf("wrong arg count\n");
+        return 0;
+    }
     // assigning a handler to clear ipc resources at termination
     signal(SIGINT, handler);
 
@@ -54,23 +58,9 @@ int main(int argc, char *argv[])
 
     // closing the file
     fclose(fp);
-
-    // getting the chosen scheduling algorithm & parameters from the user
-    printf("Please choose the scheduling algorithm you want to run:\nEnter 1 for SJF\nEnter 2 for HPF\nEnter 3 for RR\nEnter 4 for Multilevel feedback loop\n");
-    scanf("%s", argv[1]);
-
-    // in case of RR get the quantum
-    //argv[2] = "0";
-    char quantum[10]="0";
-    if (atoi(argv[1]) == 3 || atoi(argv[1]) == 4)
-    {
-        printf("Please enter the quantum: \n");
-        scanf("%s", quantum);
-    }
-
-    sprintf(argv[3], "%d", index); // sending number of processes as the third argument
     
-
+    char pcount[10]="0";
+    sprintf(pcount, "%d", index); 
     // creating a message queue
     int keyid = ftok(".", 65);
     int msqid = msgget(keyid, 0666 | IPC_CREAT);
@@ -86,7 +76,7 @@ int main(int argc, char *argv[])
     
 
     char string[100];
-    snprintf(string, sizeof(string), "./scheduler.out %s %s %s &", argv[1], quantum, argv[3]);
+    snprintf(string, sizeof(string), "./scheduler.out %s %s %s &", argv[2], argv[3], pcount);
     system(string);
 
     initClk();
