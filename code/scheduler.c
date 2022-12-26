@@ -36,13 +36,12 @@ FILE *perf;
 
 int main(int argc, char *argv[])
 {
-    
 
-    //printf("Sheduler started\n");
-    //printf("scheduler args count %d \n", argc);
-    //printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
-    
-    //int clk = getClk();
+    // printf("Sheduler started\n");
+    // printf("scheduler args count %d \n", argc);
+    // printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
+
+    // int clk = getClk();
 
     // creating the message queue
     int keyid = ftok(".", 65);
@@ -56,11 +55,11 @@ int main(int argc, char *argv[])
     fprintf(logfile, "#At time x process y state arr w total z remain y wait k\n");
 
     // TODO: implement the scheduler.
-    
+
     ///////////////////////////////// SJF //non premitave
     if (atoi(argv[1]) == 1)
     {
-        //printf("starting sjf \n");
+        // printf("starting sjf \n");
         signal(SIGUSR1, ProcessTerminated);
         signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
         // so its useless for this and should be ignored
@@ -84,7 +83,7 @@ int main(int argc, char *argv[])
 
                 QNode *newqnode = newNodeHPF(new);
                 if (pqHead == NULL)
-                    pqHead = newqnode; 
+                    pqHead = newqnode;
                 else
                     push(&pqHead, newqnode);
 
@@ -99,29 +98,29 @@ int main(int argc, char *argv[])
                 flag = 1;
             }
 
-            //if (isEmptyQNODE(&Running) && !isEmptyQNODE(&pqHead))
+            // if (isEmptyQNODE(&Running) && !isEmptyQNODE(&pqHead))
             if (!isEmptyQNODE(&Running) && flag == 1)
-            { 
+            {
                 // fork and take id of process
-                    int pid = fork();
-                    if (pid == 0)
-                    {
-                        char *runtime_char = malloc(sizeof(char));
-                        sprintf(runtime_char, "%d", Running->process->runtime);
-                        char *arg[] = {runtime_char, NULL};
+                int pid = fork();
+                if (pid == 0)
+                {
+                    char *runtime_char = malloc(sizeof(char));
+                    sprintf(runtime_char, "%d", Running->process->runtime);
+                    char *arg[] = {runtime_char, NULL};
 
-                        int execute = execv("./process.out", arg);
-                        if (execute == -1)
-                            printf("failed to execute process\n");
-                        perror("The error is: \n");
-                        exit(-1);
-                    }
+                    int execute = execv("./process.out", arg);
+                    if (execute == -1)
+                        printf("failed to execute process\n");
+                    perror("The error is: \n");
+                    exit(-1);
+                }
 
-                    raise(SIGSTOP);
-                    Running->process->processPID = pid;
-                    Running->process->Status = started;
-                    Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
-                    fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
+                raise(SIGSTOP);
+                Running->process->processPID = pid;
+                Running->process->Status = started;
+                Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
+                fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
             }
         }
 
@@ -131,12 +130,11 @@ int main(int argc, char *argv[])
         avg_wait /= atoi(argv[3]);
         utilization /= getClk();
         utilization *= 100;
-        
     }
 
     if (atoi(argv[1]) == 2) // hpf Preemptive
     {
-        //printf("starting hpf \n");
+        // printf("starting hpf \n");
         signal(SIGUSR1, ProcessTerminated);
         signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
         // so its useless for this and should be ignored
@@ -165,7 +163,7 @@ int main(int argc, char *argv[])
 
                 QNode *newqnode = newNodeHPF(new);
                 if (pqHead == NULL)
-                    pqHead = newqnode; 
+                    pqHead = newqnode;
                 else
                     push(&pqHead, newqnode);
 
@@ -254,7 +252,7 @@ int main(int argc, char *argv[])
 
     if (atoi(argv[1]) == 3) // Round Robin (RR)
     {
-        //printf("starting rr \n");
+        // printf("starting rr \n");
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
         // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
@@ -279,20 +277,20 @@ int main(int argc, char *argv[])
 
                 // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
                 enqueueCQ(circularque, new);
-                //printf("heyy %d \n", circularque->Head->process->id);
+                // printf("heyy %d \n", circularque->Head->process->id);
 
-                //printf("running empty? %d cque empty? %d \n", isEmptyCnode(Running2), isEmptyCQ(circularque));
+                // printf("running empty? %d cque empty? %d \n", isEmptyCnode(Running2), isEmptyCQ(circularque));
 
                 rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
-            
+
             // add RR LOGIC
             if (isEmptyCnode(Running2) && !isEmptyCQ(circularque))
             {
-                //printf("heyy %d \n", circularque->Head->process->id);
+                // printf("heyy %d \n", circularque->Head->process->id);
                 Running2 = peekCQ(circularque); // return pointer to process
                 count = 0;                      // used to countup to each quantum
-                //printf("running process %d\n", Running2->process->id);
+                // printf("running process %d\n", Running2->process->id);
                 quantum = atoi(argv[2]); // updating quantum cause see comment directly below
 
                 if (Running2->process->ReaminingTime < quantum) // process's remaining time less than quantum so gonna run it for only that
@@ -324,7 +322,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    //printf("continuing process\n");
+                    // printf("continuing process\n");
                     kill(Running2->process->processPID, SIGCONT);
                     Running2->process->Status = resumed;
                     Running2->process->WaitingTime = (getClk() - Running2->process->arrivaltime) - (Running2->process->runtime - Running2->process->ReaminingTime);
@@ -336,12 +334,12 @@ int main(int argc, char *argv[])
             if (!isEmptyCnode(Running2) && count == quantum) // reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
-                //printf("rem time in sched %d\n", Running2->process->ReaminingTime);
+                // printf("rem time in sched %d\n", Running2->process->ReaminingTime);
                 if (Running2->process->ReaminingTime == 0)
                 {
                     int status;
                     int rec_child = waitpid(Running2->process->processPID, &status, 0);
-                    //printf("rec child %d\n", rec_child);
+                    // printf("rec child %d\n", rec_child);
                     Running2->process->Status = finished;
 
                     processcount--;
@@ -384,7 +382,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        
+
         destroyCQ(circularque);
 
         wta /= atoi(argv[3]);
@@ -395,7 +393,7 @@ int main(int argc, char *argv[])
 
     if (atoi(argv[1]) == 4) // Multiple level Feedback Loop
     {
-        //printf("starting mlfl \n");
+        // printf("starting mlfl \n");
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
         // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
@@ -403,11 +401,12 @@ int main(int argc, char *argv[])
         processcount = atoi(argv[3]);
         int quantum = atoi(argv[2]);
 
-        chained_linkedlist *currentchain;
         // MLFLNode* Running3;
         bool endofthisqueuelevel = true;
         bool process_switched = false;
-        int currentchain_index = 0;
+        int currentchain_index = 5;
+        int currentchain;
+        printf("before construtor\n");
         MLFL *mlfl = newMLFL();
         printf("args %s %s %s \n", argv[1], argv[2], argv[3]);
         initClk();
@@ -416,7 +415,8 @@ int main(int argc, char *argv[])
             printf(" :) \n");
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, !IPC_NOWAIT);
-            if(rec_value == -1) printf(" :) \n");
+            if (rec_value == -1)
+                printf(" :) \n");
             while (rec_value != -1)
             {
                 printf("received: %d at time %d \n", message.process.id, getClk());
@@ -427,8 +427,9 @@ int main(int argc, char *argv[])
                 enqueueMLFL(mlfl, new);
                 printf("oi\n");
                 rec_value = 1;
-                //int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                //process_switched = true;
+                // int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                // process_switched = true;
+                rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
             printf(" :) \n");
             if (endofthisqueuelevel)
@@ -437,55 +438,73 @@ int main(int argc, char *argv[])
                 switch (currentchain_index)
                 {
                 case 0:
-                    currentchain = mlfl->Head0;
+                    currentchain = 0;
+                    //currentchain = mlfl->Head0;
                     break;
                 case 1:
-                    currentchain = mlfl->Head1;
+                    currentchain = 1;
+                    //currentchain = mlfl->Head1;
                     break;
                 case 2:
-                    currentchain = mlfl->Head2;
+                    currentchain = 2;
+                    //currentchain = mlfl->Head2;
                     break;
                 case 3:
-                    currentchain = mlfl->Head3;
+                    currentchain = 3;
+                    //currentchain = mlfl->Head3;
                     break;
                 case 4:
-                    currentchain = mlfl->Head4;
+                    currentchain = 4;
+                    //currentchain = mlfl->Head4;
                     break;
                 case 5:
-                    currentchain = mlfl->Head5;
+                    currentchain = 5;
+                    //currentchain = mlfl->Head5;
+                    printf("in case 5 of node 1\n");
                     break;
                 case 6:
-                    currentchain = mlfl->Head6;
+                    currentchain = 6;
+                    //currentchain = mlfl->Head6;
                     break;
                 case 7:
-                    currentchain = mlfl->Head7;
+                    currentchain = 7;
+                    //currentchain = mlfl->Head7;
                     break;
                 case 8:
-                    currentchain = mlfl->Head8;
+                    currentchain = 8;
+                    //currentchain = mlfl->Head8;
                     break;
                 case 9:
-                    currentchain = mlfl->Head9;
+                    currentchain = 9;
+                    //currentchain = mlfl->Head9;
                     break;
                 case 10:
-                    currentchain = mlfl->Head10;
+                    currentchain = 10;
+                    //currentchain = mlfl->Head10;
                     break;
                 default:
                     printf("Out of range");
                     break;
                 }
+                ///PrintQueue(mlfl->linkedlist5);
                 process_switched = true;
-                Running3 = currentchain->Head;
-                if (Running3 == NULL)
-                printf("OI1\n");
-                    grabnextnode_mlfl(currentchain, Running3); // if this current level is empty, go grab next node
+                Running3 = PeekMLFLChainedList(currentchain, mlfl);
+                //printf("running3: %d", Running3->process->id);
+                if (isEmptyQNODE(&Running3))
+                {
+                    printf("OI1\n");
+                   Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl); // if this current level is empty, go grab next node
+                } 
                 if (Running3 == NULL)
                 { // hit that 'double null' so that level of the queue is done and need to advance to next level
-                printf("OI2\n");
+                    printf("OI2\n");
                     currentchain_index = currentchain_index + 1 % 11;
+                    //currentchain = currentchain_index;
                     endofthisqueuelevel = true; // end of this queue
                 }
                 else
                 {
+                    printf("OI3\n");
                     endofthisqueuelevel = false;
                 }
                 printf(" :) \n");
@@ -494,6 +513,7 @@ int main(int argc, char *argv[])
 
             if (Running3 != NULL && process_switched)
             {
+                printf("actual running of a process \n");
                 endofthisqueuelevel = false;
                 process_switched = false;
 
@@ -560,7 +580,7 @@ int main(int argc, char *argv[])
                     clearfinishedprocesses(mlfl, Running3->process->processpriority);
 
                     process_switched = true;
-                    grabnextnode_mlfl(currentchain, Running3);
+                   Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl);
                     if (Running3 == NULL)
                     { // hit that 'double null' so that level of the queue is done and need to advance to next level
                         currentchain_index = currentchain_index + 1 % 11;
@@ -590,7 +610,7 @@ int main(int argc, char *argv[])
                     }
 
                     process_switched = true;
-                    grabnextnode_mlfl(currentchain, Running3);
+                    Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl);
                     if (Running3 == NULL)
                     { // hit that 'double null' so that level of the queue is done and need to advance to next level
                         currentchain_index = currentchain_index + 1 % 11;
@@ -626,22 +646,22 @@ void ProcessTerminated(int signum)
     wta += (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime;
     // calculated at proccess while it was running
     fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
-    //printf("At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
+    // printf("At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
     freeinsideQNODE(Running);
     free(Running); // like delete in c++ ? yes it deallocates memory
     Running = NULL;
     processcount--;
-    //printf("processcount=%d\n", processcount);
+    // printf("processcount=%d\n", processcount);
 }
 void clockchangeRR(int signum)
 {
     count++;
     Running2->process->ReaminingTime--;
-    //printf("count: %d rem time %d\n", count, Running2->process->ReaminingTime);
+    // printf("count: %d rem time %d\n", count, Running2->process->ReaminingTime);
 }
 void clockchangeMLFL(int signum)
 {
     count++;
     Running3->process->ReaminingTime--;
-    //printf("count: %d rem time %d\n", count, Running3->process->ReaminingTime);
+    // printf("count: %d rem time %d\n", count, Running3->process->ReaminingTime);
 }

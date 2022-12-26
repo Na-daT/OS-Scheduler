@@ -3,12 +3,12 @@
 #include "headers.h"
 #endif
 
-
 void handler(int signum);
 
 int main(int argc, char *argv[])
 {
-    if(argc != 4){
+    if (argc != 4)
+    {
         printf("wrong arg count\n");
         return 0;
     }
@@ -58,9 +58,9 @@ int main(int argc, char *argv[])
 
     // closing the file
     fclose(fp);
-    
-    char pcount[10]="0";
-    sprintf(pcount, "%d", index); 
+
+    char pcount[10] = "0";
+    sprintf(pcount, "%d", index);
     // creating a message queue
     int keyid = ftok(".", 65);
     int msqid = msgget(keyid, 0666 | IPC_CREAT);
@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
     system("./clk.out &");
 
     // establishing communication with the clock module
-    
 
     char string[100];
     snprintf(string, sizeof(string), "./scheduler.out %s %s %s &", argv[2], argv[3], pcount);
@@ -87,8 +86,8 @@ int main(int argc, char *argv[])
 
         while (getClk() < message.process.arrival)
         {
-            //sleep(message.process.arrival - getClk());
-            // sleep(1);
+            // sleep(message.process.arrival - getClk());
+            //  sleep(1);
         }
 
         int send_val = msgsnd(msqid, &message, sizeof(message.process), !IPC_NOWAIT);
@@ -98,20 +97,19 @@ int main(int argc, char *argv[])
             perror("Failed to send. The error is ");
         }
         printf("sent: %d at time %d\n", message.process.id, getClk());
-
+        printf("I am here in process generator \n");
         i++;
     }
 
-    pause();
+    pause();//why?
     // releasing communication with the clock module
     destroyClk(1);
 
-    //freeing the dynamically allocated array
+    // freeing the dynamically allocated array
     free(ProcessArray);
 
     // NO FORKING
     // process generator waiting till the exit signal at clock destruction (end of scheduler)
-    
 
     return 0;
 }
