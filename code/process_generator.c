@@ -83,12 +83,13 @@ int main(int argc, char *argv[])
     system("./clk.out &");
 
     // establishing communication with the clock module
-    initClk();
+    
 
     char string[100];
     snprintf(string, sizeof(string), "./scheduler.out %s %s %s &", argv[1], quantum, argv[3]);
     system(string);
 
+    initClk();
     // loop and send the arrived processes to the scheduler using message queue
     while (i < index)
     {
@@ -96,7 +97,7 @@ int main(int argc, char *argv[])
 
         while (getClk() < message.process.arrival)
         {
-            sleep(message.process.arrival - getClk());
+            //sleep(message.process.arrival - getClk());
             // sleep(1);
         }
 

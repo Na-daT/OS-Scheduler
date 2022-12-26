@@ -28,9 +28,9 @@ bool isEmptyQNODE(struct QNode** head)
 void push(QNode** head, QNode* temp)
 {
     QNode* start = (*head);
-    printf("trying to insert new node in linked list \n");
-    printf("process id %d \n ", temp->process->id);
-    printf("process level %d \n ", temp->process->processpriority);
+    //printf("trying to insert new node in linked list \n");
+    //printf("process id %d \n ", temp->process->id);
+    //printf("process level %d \n ", temp->process->processpriority);
     // Create new Node
     //QNode* temp = newNode(d, p);
  

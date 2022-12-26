@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
 {
     
 
-    printf("Sheduler started\n");
-    printf("scheduler args count %d \n", argc);
-    printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
+    //printf("Sheduler started\n");
+    //printf("scheduler args count %d \n", argc);
+    //printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
     
     //int clk = getClk();
 
@@ -56,18 +56,18 @@ int main(int argc, char *argv[])
     fprintf(logfile, "#At time x process y state arr w total z remain y wait k\n");
 
     // TODO: implement the scheduler.
-    initClk();
+    
     ///////////////////////////////// SJF //non premitave
     if (atoi(argv[1]) == 1)
     {
-        printf("starting sjf \n");
+        //printf("starting sjf \n");
         signal(SIGUSR1, ProcessTerminated);
         signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
         // so its useless for this and should be ignored
         processcount = atoi(argv[3]);
         QNode *pqHead = NULL; // headofqueue
         // QNode* Running = NULL; // process currently running
-
+        initClk();
         while (processcount > 0)
         {
 
@@ -76,15 +76,15 @@ int main(int argc, char *argv[])
 
             while (rec_value != -1) // get all process that arrive at current clk time
             {
-                //printf("reciving sjf \n");
                 utilization += message.process.runtime;
                 printf("received: %d at time %d \n", message.process.id, getClk());
+
                 node *new = newnode(message.process.id, message.process.priority,
                                     message.process.arrival, message.process.runtime, waiting);
-                // needs to be checked or modified with message.process
-                QNode *newqnode = newNodeSJF(new);
-                if (isEmptyQNODE(&pqHead))
-                    pqHead = newqnode;
+
+                QNode *newqnode = newNodeHPF(new);
+                if (pqHead == NULL)
+                    pqHead = newqnode; 
                 else
                     push(&pqHead, newqnode);
 
@@ -102,33 +102,30 @@ int main(int argc, char *argv[])
             //if (isEmptyQNODE(&Running) && !isEmptyQNODE(&pqHead))
             if (!isEmptyQNODE(&Running) && flag == 1)
             { 
-                int pid = fork();
-                if (pid == 0)
-                {
-                    printf("forking process \n");
-                    char *runtime_char = malloc(sizeof(char));
-                    sprintf(runtime_char, "%d", Running->process->runtime);
-                    char *arg[] = {runtime_char, NULL};
-                    // instead of listing args one by one in execv, they are grouped in var "arg" and sent to function that way
-                    // TO DO MAKE SURE ITS CORRECT AND UNDERSTAND IT WELL
+                // fork and take id of process
+                    int pid = fork();
+                    if (pid == 0)
+                    {
+                        char *runtime_char = malloc(sizeof(char));
+                        sprintf(runtime_char, "%d", Running->process->runtime);
+                        char *arg[] = {runtime_char, NULL};
 
-                    int execute = execv("./process.out", arg);
-                    if (execute == -1)
-                        printf("failed to execute process\n");
-                    perror("The error is: \n");
-                    exit(-1);
-                }
-                raise(SIGSTOP); // schedular waits till child is done forking process
-                // when process continues it send a sigcont to schedular
-                Running->process->processPID = pid;
-                Running->process->Status = started;
-                Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
-                printf("At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
-                fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
+                        int execute = execv("./process.out", arg);
+                        if (execute == -1)
+                            printf("failed to execute process\n");
+                        perror("The error is: \n");
+                        exit(-1);
+                    }
+
+                    raise(SIGSTOP);
+                    Running->process->processPID = pid;
+                    Running->process->Status = started;
+                    Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
+                    fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
             }
         }
 
-        //destroyPQ(pqHead);
+        destroyPQ(pqHead);
 
         wta /= atoi(argv[3]);
         avg_wait /= atoi(argv[3]);
@@ -139,7 +136,7 @@ int main(int argc, char *argv[])
 
     if (atoi(argv[1]) == 2) // hpf Preemptive
     {
-        printf("starting hpf \n");
+        //printf("starting hpf \n");
         signal(SIGUSR1, ProcessTerminated);
         signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
         // so its useless for this and should be ignored
@@ -147,7 +144,7 @@ int main(int argc, char *argv[])
         QNode *pqHead = NULL; // head of prioqueue
         // QNode* Running = NULL; // process currently running
         int last_runclk = 0;
-
+        initClk();
         while (processcount > 0)
         {
             // IMPORTANT TO DO
@@ -168,7 +165,7 @@ int main(int argc, char *argv[])
 
                 QNode *newqnode = newNodeHPF(new);
                 if (pqHead == NULL)
-                    pqHead = newqnode; // needs to be checked or modified with message.process
+                    pqHead = newqnode; 
                 else
                     push(&pqHead, newqnode);
 
@@ -257,7 +254,7 @@ int main(int argc, char *argv[])
 
     if (atoi(argv[1]) == 3) // Round Robin (RR)
     {
-        printf("starting rr \n");
+        //printf("starting rr \n");
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
         // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
@@ -266,7 +263,7 @@ int main(int argc, char *argv[])
         circular_queue *circularque = create_circular_queue(processcount);
         // CNode* Running2 = NULL;
         int quantum = atoi(argv[2]);
-
+        initClk();
         while (processcount > 0)
         {
 
@@ -295,7 +292,7 @@ int main(int argc, char *argv[])
                 //printf("heyy %d \n", circularque->Head->process->id);
                 Running2 = peekCQ(circularque); // return pointer to process
                 count = 0;                      // used to countup to each quantum
-                printf("running process %d\n", Running2->process->id);
+                //printf("running process %d\n", Running2->process->id);
                 quantum = atoi(argv[2]); // updating quantum cause see comment directly below
 
                 if (Running2->process->ReaminingTime < quantum) // process's remaining time less than quantum so gonna run it for only that
@@ -327,7 +324,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    printf("continuing process\n");
+                    //printf("continuing process\n");
                     kill(Running2->process->processPID, SIGCONT);
                     Running2->process->Status = resumed;
                     Running2->process->WaitingTime = (getClk() - Running2->process->arrivaltime) - (Running2->process->runtime - Running2->process->ReaminingTime);
@@ -339,12 +336,12 @@ int main(int argc, char *argv[])
             if (!isEmptyCnode(Running2) && count == quantum) // reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
-                printf("rem time in sched %d\n", Running2->process->ReaminingTime);
+                //printf("rem time in sched %d\n", Running2->process->ReaminingTime);
                 if (Running2->process->ReaminingTime == 0)
                 {
                     int status;
                     int rec_child = waitpid(Running2->process->processPID, &status, 0);
-                    printf("rec child %d\n", rec_child);
+                    //printf("rec child %d\n", rec_child);
                     Running2->process->Status = finished;
 
                     processcount--;
@@ -398,7 +395,7 @@ int main(int argc, char *argv[])
 
     if (atoi(argv[1]) == 4) // Multiple level Feedback Loop
     {
-        printf("starting mlfl \n");
+        //printf("starting mlfl \n");
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
         // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
@@ -413,6 +410,7 @@ int main(int argc, char *argv[])
         int currentchain_index = 0;
         MLFL *mlfl = newMLFL();
         printf("args %s %s %s \n", argv[1], argv[2], argv[3]);
+        initClk();
         while (processcount > 0)
         {
             printf(" :) \n");
@@ -628,22 +626,22 @@ void ProcessTerminated(int signum)
     wta += (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime;
     // calculated at proccess while it was running
     fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
-    printf("At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
+    //printf("At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->WaitingTime, getClk() - Running->process->arrivaltime, (float)(getClk() - Running->process->arrivaltime) / Running->process->runtime);
     freeinsideQNODE(Running);
     free(Running); // like delete in c++ ? yes it deallocates memory
     Running = NULL;
     processcount--;
-    printf("processcount=%d\n", processcount);
+    //printf("processcount=%d\n", processcount);
 }
 void clockchangeRR(int signum)
 {
     count++;
     Running2->process->ReaminingTime--;
-    printf("count: %d rem time %d\n", count, Running2->process->ReaminingTime);
+    //printf("count: %d rem time %d\n", count, Running2->process->ReaminingTime);
 }
 void clockchangeMLFL(int signum)
 {
     count++;
     Running3->process->ReaminingTime--;
-    printf("count: %d rem time %d\n", count, Running3->process->ReaminingTime);
+    //printf("count: %d rem time %d\n", count, Running3->process->ReaminingTime);
 }
