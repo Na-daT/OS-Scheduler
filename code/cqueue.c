@@ -91,7 +91,8 @@ bool isEmptyCQ(circular_queue *cq)
 
 bool isEmptyCnode(CNode *cq)
 {
-    return cq->process == NULL;
+    //return cq->process == NULL;
+    return cq == NULL;
 }
 
 // destroy circular queue

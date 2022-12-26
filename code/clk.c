@@ -5,7 +5,10 @@
  * It is not a real part of the operating system!
  */
 
-#include "headers.h"
+#ifndef NODE_H
+#define NODE_H
+#include "node.h"
+#endif 
 
 int shmid;
 

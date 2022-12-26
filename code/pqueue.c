@@ -19,7 +19,7 @@ void pop(QNode** head)
     //free(temp); //yes i just want it to update the queue and not free the head
 }
 
-bool isEmpty(struct QNode** head)
+bool isEmptyQNODE(struct QNode** head)
 {
     return (*head) == NULL;
 }
@@ -28,7 +28,9 @@ bool isEmpty(struct QNode** head)
 void push(QNode** head, QNode* temp)
 {
     QNode* start = (*head);
- 
+    printf("trying to insert new node in linked list \n");
+    printf("process id %d \n ", temp->process->id);
+    printf("process level %d \n ", temp->process->processpriority);
     // Create new Node
     //QNode* temp = newNode(d, p);
  
@@ -46,7 +48,7 @@ void push(QNode** head, QNode* temp)
         // Traverse the list and find a
         // position to insert new node
         while (start->next != NULL &&
-            start->next->process->Qpriority < temp->process->Qpriority) {
+            start->next->process->Qpriority <= temp->process->Qpriority) { // <= instead of <
             start = start->next;
         }
  

@@ -1,6 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#ifndef HEADERS_H
+#define HEADERS_H
+#include "headers.h"
+#endif
 
 enum status{
     stopped = 0,
@@ -26,6 +27,8 @@ typedef struct node {
     enum status Status;
     //Status = waiting; 
     int quantum; //RR
+
+    int schedpid;
     //int Live_Priority; //mlfl //surprisngly don't need it
 
     // Lower values indicate higher Qpriority
@@ -46,11 +49,11 @@ typedef struct CNode {
     struct CNode* prev;
 } CNode;
 
-typedef struct MLFLNode {
+/*typedef struct MLFLNode {
 	//int data;
     node* process; 
     struct MLFLNode* next;
-} MLFLNode;
+} MLFLNode;*/
 
 
 node* newnode(int id, int Processpriority, int arrival, int runtime, 
@@ -60,11 +63,12 @@ node* newnode(int id, int Processpriority, int arrival, int runtime,
     temp->id = id;
     temp->processpriority = Processpriority;
     temp->processPID=-1;
-    temp->runtime;
+    temp->runtime=runtime;
     temp->ReaminingTime=runtime;
     temp->arrivaltime=arrival;
     temp->WaitingTime=0;
     temp->Status=status;
+    temp->schedpid = 0;
     return temp;
 }
 
@@ -104,12 +108,13 @@ QNode* newNodeHPF(node* input)
     return temp;
 }
 
-MLFLNode* newNodeMLFL(node* input)
+QNode* newNodeMLFL(node* input)
 {
     
-    MLFLNode* temp = ( MLFLNode*)malloc(sizeof(MLFLNode));
+    QNode* temp = ( QNode*)malloc(sizeof(QNode));
     temp->process = input;
     temp->process->Status = waiting;
+    temp->process->Qpriority = 0;
     temp->next = NULL;
 
     return temp;
@@ -121,6 +126,6 @@ void freeinsideCNODE(CNode* cnode){
 void freeinsideQNODE(QNode* qnode){
     if(qnode->process != NULL) free(qnode->process);
 }
-void freeinsideMLFL(MLFLNode* MLFLnode){
+void freeinsideMLFL(QNode* MLFLnode){
     if(MLFLnode->process != NULL) free(MLFLnode->process);
 }

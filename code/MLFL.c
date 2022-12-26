@@ -1,21 +1,25 @@
-#include "linkedlist.c"
-
+//#include "linkedlist.c"
+#ifndef pqueue
+#define pqueue
+#include "pqueue.c"
+#endif
 typedef struct chained_linkedlist
 {
-    linkedlist* listHead;
+    //linkedlist* listHead;
+    QNode* Head;
     struct chained_linkedlist* next;
     //int baseprio;
 } chained_linkedlist;
 
-chained_linkedlist* create_chainedlinkedlist(linkedlist* list, chained_linkedlist* nextcll)
+chained_linkedlist* create_chainedlinkedlist(QNode* list, chained_linkedlist* nextcll)
 {
     chained_linkedlist *cll = (chained_linkedlist *)malloc(sizeof(chained_linkedlist));
-    cll->listHead = list;
+    cll->Head = list;
     cll->next = nextcll;
     return cll;
 }
 
-void grabnextnode_mlfl(chained_linkedlist* currentchain, MLFLNode* currentlyrunning){
+void grabnextnode_mlfl(chained_linkedlist* currentchain, QNode* currentlyrunning){
     // head0 1 process // head0 0 process 
     // head1 0 process
     // head2 1 process //corner case
@@ -27,8 +31,8 @@ void grabnextnode_mlfl(chained_linkedlist* currentchain, MLFLNode* currentlyrunn
     }
     else while(currentchain -> next) { //second null
         currentchain = currentchain ->next;
-        if (currentchain->listHead->Head != NULL){
-            currentlyrunning = currentchain->listHead->Head;
+        if (currentchain->Head != NULL){
+            currentlyrunning = currentchain->Head;
             return;
         }
     } 
@@ -41,17 +45,17 @@ void grabnextnode_mlfl(chained_linkedlist* currentchain, MLFLNode* currentlyrunn
 
 typedef struct MLFL
 {
-    linkedlist* linkedlist0;
-    linkedlist* linkedlist1;
-    linkedlist* linkedlist2;
-    linkedlist* linkedlist3;
-    linkedlist* linkedlist4;
-    linkedlist* linkedlist5;
-    linkedlist* linkedlist6;
-    linkedlist* linkedlist7;
-    linkedlist* linkedlist8;
-    linkedlist* linkedlist9;
-    linkedlist* linkedlist10;
+    QNode* linkedlist0;
+    QNode* linkedlist1;
+    QNode* linkedlist2;
+    QNode* linkedlist3;
+    QNode* linkedlist4;
+    QNode* linkedlist5;
+    QNode* linkedlist6;
+    QNode* linkedlist7;
+    QNode* linkedlist8;
+    QNode* linkedlist9;
+    QNode* linkedlist10;
 
     chained_linkedlist* Head0; //use an array with currentchain_index for each instead?
     chained_linkedlist* Head1;
@@ -71,21 +75,23 @@ typedef struct MLFL
 // head1 = linkedlist1 + head0
 // head2 = linkedlist2 + head1
 
+
+
 MLFL* newMLFL(){
     
     MLFL *mlfl = (MLFL *)malloc(sizeof(MLFL));
 
-    mlfl-> linkedlist0 = create_linkedlist();
-    mlfl-> linkedlist1 = create_linkedlist();
-    mlfl-> linkedlist2 = create_linkedlist();
-    mlfl-> linkedlist3 = create_linkedlist();
-    mlfl-> linkedlist4 = create_linkedlist();
-    mlfl-> linkedlist5 = create_linkedlist();
-    mlfl-> linkedlist6 = create_linkedlist();
-    mlfl-> linkedlist7 = create_linkedlist();
-    mlfl-> linkedlist8 = create_linkedlist();
-    mlfl-> linkedlist9 = create_linkedlist();
-    mlfl-> linkedlist10 = create_linkedlist();
+    mlfl-> linkedlist0 = NULL;
+    mlfl-> linkedlist1 = NULL;
+    mlfl-> linkedlist2 = NULL;
+    mlfl-> linkedlist3 = NULL;
+    mlfl-> linkedlist4 = NULL;
+    mlfl-> linkedlist5 = NULL;
+    mlfl-> linkedlist6 = NULL;
+    mlfl-> linkedlist7 = NULL;
+    mlfl-> linkedlist8 = NULL;
+    mlfl-> linkedlist9 = NULL;
+    mlfl-> linkedlist10 = NULL;
     
     mlfl-> Head0 = create_chainedlinkedlist(mlfl->linkedlist0, NULL);
     mlfl-> Head1 = create_chainedlinkedlist(mlfl->linkedlist1, mlfl->Head0);
@@ -101,17 +107,17 @@ MLFL* newMLFL(){
 }
 
 void destroymlfl(MLFL* mlfl){
-    destroylinkedlist(mlfl->linkedlist0);
-    destroylinkedlist(mlfl->linkedlist1);
-    destroylinkedlist(mlfl->linkedlist2);
-    destroylinkedlist(mlfl->linkedlist3);
-    destroylinkedlist(mlfl->linkedlist4);
-    destroylinkedlist(mlfl->linkedlist5);
-    destroylinkedlist(mlfl->linkedlist6);
-    destroylinkedlist(mlfl->linkedlist7);
-    destroylinkedlist(mlfl->linkedlist8);
-    destroylinkedlist(mlfl->linkedlist9);
-    destroylinkedlist(mlfl->linkedlist10);
+    destroyPQ(mlfl->linkedlist0);
+    destroyPQ(mlfl->linkedlist1);
+    destroyPQ(mlfl->linkedlist2);
+    destroyPQ(mlfl->linkedlist3);
+    destroyPQ(mlfl->linkedlist4);
+    destroyPQ(mlfl->linkedlist5);
+    destroyPQ(mlfl->linkedlist6);
+    destroyPQ(mlfl->linkedlist7);
+    destroyPQ(mlfl->linkedlist8);
+    destroyPQ(mlfl->linkedlist9);
+    destroyPQ(mlfl->linkedlist10);
     
     free(mlfl->Head0);
     free(mlfl->Head1);
@@ -129,41 +135,52 @@ void destroymlfl(MLFL* mlfl){
 }
 
 void enqueueMLFL(MLFL* mlfl, node* n){
-    if(n == NULL || mlfl == NULL) return;
-    //MLFLNode* new =  newNodeMLFL(n);
+    //if(n == NULL || mlfl == NULL) return;
+    QNode* new =  newNodeMLFL(n);
     switch (n->processpriority) {
                     case 0:
-                        enqueuelinkedlist(mlfl->linkedlist0, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist0))) mlfl->linkedlist0 = new;
+                        else push(&(mlfl->linkedlist0), new);
                         break;
                     case 1:
-                        enqueuelinkedlist(mlfl->linkedlist1, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist1))) mlfl->linkedlist1 = new;
+                        else push(&(mlfl->linkedlist1), new);
                         break;
                     case 2:
-                        enqueuelinkedlist(mlfl->linkedlist2, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist2))) mlfl->linkedlist2 = new;
+                        else push(&(mlfl->linkedlist2), new);
                         break;
                     case 3:
-                        enqueuelinkedlist(mlfl->linkedlist3, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist3))) mlfl->linkedlist3 = new;
+                        else push(&(mlfl->linkedlist3), new);
                         break;
                     case 4:
-                        enqueuelinkedlist(mlfl->linkedlist4, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist4))) mlfl->linkedlist4 = new;
+                        else push(&(mlfl->linkedlist4), new);
                         break;
                     case 5:
-                        enqueuelinkedlist(mlfl->linkedlist5, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist5))) mlfl->linkedlist5 = new;
+                        else push(&(mlfl->linkedlist5), new);
                         break;
                     case 6:
-                        enqueuelinkedlist(mlfl->linkedlist6, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist6))) mlfl->linkedlist6= new;
+                        else push(&(mlfl->linkedlist6), new);
                         break;
                     case 7:
-                        enqueuelinkedlist(mlfl->linkedlist7, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist7))) mlfl->linkedlist7 = new;
+                        else push(&(mlfl->linkedlist7), new);
                         break;
                     case 8:
-                        enqueuelinkedlist(mlfl->linkedlist8, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist8))) mlfl->linkedlist8 = new;
+                        else push(&(mlfl->linkedlist8), new);
                         break;
                     case 9:
-                        enqueuelinkedlist(mlfl->linkedlist9, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist9))) mlfl->linkedlist9 = new;
+                        else push(&(mlfl->linkedlist9), new);
                         break;
                     case 10:
-                        enqueuelinkedlist(mlfl->linkedlist10, n);
+                        if (isEmptyQNODE(&(mlfl->linkedlist10))) mlfl->linkedlist10 = new;
+                        else push(&(mlfl->linkedlist10), new);
                         break;
                     default:
                         printf("Out of range");
@@ -171,17 +188,17 @@ void enqueueMLFL(MLFL* mlfl, node* n){
                 }
 }
 
-void clearfinishedprocesses_in_a_priolevel(linkedlist* level){
-    if(level->Head && level->Head->process->Status == finished){
-        MLFLNode* temp = level->Head;
-        level -> Head = temp -> next;
+void clearfinishedprocesses_in_a_priolevel(QNode* level){
+    if(level&& level->process->Status == finished){
+        QNode* temp = level;
+        level = temp -> next;
         freeinsideMLFL(temp);
         free(temp);
         return;
     } //dealing with head is finished
 
-    MLFLNode* temp = level->Head->next;
-    MLFLNode* prev = level->Head; //clearing rest of list
+    QNode* temp = level->next;
+    QNode* prev = level; //clearing rest of list
     while(temp){
         if(temp->process->Status == finished){
                 prev->next = temp->next;
