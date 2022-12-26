@@ -80,128 +80,161 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
     // if currentlyrunning returns null then we have hit the 'double null' and then we are at the end of all chains
     // and we should run lesser prio chain next ex: head0 -> head1 (using switch case inside scheduler part)
 
-    if (currentlyrunning != NULL && currentlyrunning->next)
-    { // first null
-        printf("in first null\n");
-        currentlyrunning = currentlyrunning->next;
-        return currentlyrunning;
-    }
-    else
+    // if (currentlyrunning != NULL && currentlyrunning->next != NULL)
+    // { // first null
+    //     printf("in first null\n");
+    //     currentlyrunning = currentlyrunning->next;
+
+    //     if (currentlyrunning != NULL && currentlyrunning->next == NULL)
+    //     {
+    //         printf("in if loop dec currentchain\n");
+    //         (*currentchain)--;
+    //     }
+    //     // printf("process id after first null: %d\n", currentlyrunning->process->id);
+    //     printf("currentchain after first null: %d\n", *currentchain);
+    //     return currentlyrunning;
+    // }
+    // else
+    // {
+    while (*currentchain > -1)
     {
-        while (*currentchain > -1)
+        printf("while loop in grabnextnode\n");
+        switch (*currentchain)
         {
-            switch (*currentchain)
+        case 0:
+            if (mlfl->linkedlist0 != NULL)
             {
-            case 0:
-                if (mlfl->linkedlist0 != NULL)
-                {
-                    return mlfl->linkedlist0;
-                }
-                else
-                    return NULL;
-            case 1:
-                if (mlfl->linkedlist1 != NULL)
-                {
-                    return mlfl->linkedlist1;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 2:
-                if (mlfl->linkedlist2 != NULL)
-                {
-                    return mlfl->linkedlist2;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 3:
-                if (mlfl->linkedlist3 != NULL)
-                {
-                    return mlfl->linkedlist3;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 4:
-                if (mlfl->linkedlist4 != NULL)
-                {
-                    return mlfl->linkedlist4;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 5:
-                if (mlfl->linkedlist5 != NULL)
-                {
-                    return mlfl->linkedlist5;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 6:
-                if (mlfl->linkedlist6 != NULL)
-                {
-                    return mlfl->linkedlist6;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 7:
-                if (mlfl->linkedlist7 != NULL)
-                {
-                    return mlfl->linkedlist7;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 8:
-                if (mlfl->linkedlist8 != NULL)
-                {
-                    return mlfl->linkedlist8;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 9:
-                if (mlfl->linkedlist9 != NULL)
-                {
-                    return mlfl->linkedlist9;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
-            case 10:
-                if (mlfl->linkedlist10 != NULL)
-                {
-                    return mlfl->linkedlist10;
-                }
-                else
-                {
-                    *currentchain--;
-                    break;
-                }
+                printf("grabnext node in case 0\n");
+                return mlfl->linkedlist0;
+            }
+            else
+                return NULL;
+        case 1:
+            if (mlfl->linkedlist1 != NULL)
+            {
+                printf("grabnext node in case 1 \n");
+                (*currentchain)--;
+                return mlfl->linkedlist1;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 2:
+            if (mlfl->linkedlist2 != NULL)
+            {
+                printf("grabnext node in case 2\n");
+                (*currentchain)--;
+                return mlfl->linkedlist2;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 3:
+            if (mlfl->linkedlist3 != NULL)
+            {
+                printf("grabnext node in case3\n");
+                (*currentchain)--;
+                return mlfl->linkedlist3;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 4:
+            if (mlfl->linkedlist4 != NULL)
+            {
+                printf("grabnext node in case 4\n");
+                (*currentchain)--;
+                return mlfl->linkedlist4;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 5:
+            if (mlfl->linkedlist5 != NULL)
+            {
+                printf("grabnext node in case 5\n");
+                printf("process id: %d\n", mlfl->linkedlist5->process->id);
+                (*currentchain)--;
+                return mlfl->linkedlist5;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 6:
+            if (mlfl->linkedlist6 != NULL)
+            {
+                printf("grabnext node in case 6\n");
+                (*currentchain)--;
+                return mlfl->linkedlist6;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 7:
+            if (mlfl->linkedlist7 != NULL)
+            {
+                printf("grabnext node in case 7\n");
+                (*currentchain)--;
+                return mlfl->linkedlist7;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 8:
+            if (mlfl->linkedlist8 != NULL)
+            {
+                printf("grabnext node in case 8\n");
+                (*currentchain)--;
+                return mlfl->linkedlist8;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 9:
+            if (mlfl->linkedlist9 != NULL)
+            {
+                printf("grabnext node in case 9\n");
+                (*currentchain)--;
+                return mlfl->linkedlist9;
+            }
+            else
+            {
+                (*currentchain)--;
+                break;
+            }
+        case 10:
+            if (mlfl->linkedlist10 != NULL)
+            {
+                printf("grabnext node in case10\n");
+                (*currentchain)--;
+                return mlfl->linkedlist10;
+            }
+            else
+            {
+                printf("ELSE grabnext node in case10\n");
+                (*currentchain)--;
+                break;
             }
         }
     }
+    //(*currentchain) = 10;
+    //}
 }
 
 // head0 = linkedlist0
@@ -406,14 +439,65 @@ QNode *PeekMLFLChainedList(int linkedListindex, MLFL *mlfl)
         return temp;
 }
 
-void clearfinishedprocesses_in_a_priolevel(QNode *level)
+void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
 {
     if (level && level->process->Status == finished)
     {
-        QNode *temp = level;
-        level = temp->next;
-        freeinsideMLFL(temp);
-        free(temp);
+        switch (level->process->processpriority)
+        {
+        case 0:
+            mlfl->linkedlist0 = NULL;
+            level = NULL;
+            break;
+        case 1:
+            mlfl->linkedlist1 = NULL;
+            level = NULL;
+            break;
+        case 2:
+            mlfl->linkedlist2 = NULL;
+            level = NULL;
+            break;
+        case 3:
+            mlfl->linkedlist3 = NULL;
+            level = NULL;
+            break;
+        case 4:
+            mlfl->linkedlist4 = NULL;
+            level = NULL;
+            break;
+        case 5:
+            mlfl->linkedlist5 = NULL;
+            level = NULL;
+            break;
+        case 6:
+            mlfl->linkedlist6 = NULL;
+            level = NULL;
+            break;
+        case 7:
+            mlfl->linkedlist7 = NULL;
+            level = NULL;
+            break;
+        case 8:
+            mlfl->linkedlist8 = NULL;
+            level = NULL;
+            break;
+        case 9:
+            mlfl->linkedlist9 = NULL;
+            level = NULL;
+            break;
+        case 10:
+            mlfl->linkedlist10 = NULL;
+            level = NULL;
+            break;
+        }
+        // printf("clearfinishedprocesses_in_a_priolevel\n");
+        // printf("level->process->id %d\n", level->process->id);
+
+        // printf("clearing head of list");
+        // // QNode *temp = level;
+        //  level = temp->next;
+        //  freeinsideMLFL(level);
+        free(level);
         return;
     } // dealing with head is finished
 
@@ -441,25 +525,25 @@ void clearfinishedprocesses(MLFL *mlfl, int prio)
     // corner case with dequeueing
 
     if (prio == 0)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist0);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist0, mlfl);
     if (prio == 1)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist1);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist1, mlfl);
     if (prio == 2)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2, mlfl);
     if (prio == 3)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3, mlfl);
     if (prio == 4)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist4);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist4, mlfl);
     if (prio == 5)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist5);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist5, mlfl);
     if (prio == 6)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist6);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist6, mlfl);
     if (prio == 7)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist7);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist7, mlfl);
     if (prio == 8)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist8);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist8, mlfl);
     if (prio == 9)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist9);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist9, mlfl);
     if (prio == 10)
-        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist10);
+        clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist10, mlfl);
 }

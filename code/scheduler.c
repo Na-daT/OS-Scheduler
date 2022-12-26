@@ -404,21 +404,23 @@ int main(int argc, char *argv[])
         // MLFLNode* Running3;
         bool endofthisqueuelevel = true;
         bool process_switched = false;
-        int currentchain_index = 5;
+        int currentchain_index = 10;
         int currentchain;
-        printf("before construtor\n");
+        // printf("before construtor\n");
         MLFL *mlfl = newMLFL();
         printf("args %s %s %s \n", argv[1], argv[2], argv[3]);
         initClk();
         while (processcount > 0)
         {
-            printf(" :) \n");
+            while (getClk() < 1)
+                ;
             struct msgbuffer message;
-            int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, !IPC_NOWAIT);
-            if (rec_value == -1)
-                printf(" :) \n");
+            int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+            // if (rec_value == -1)
+            //     printf(" rec value is -1 :) \n");
             while (rec_value != -1)
             {
+                printf("are we stuck in small while loop? \n");
                 printf("received: %d at time %d \n", message.process.id, getClk());
                 utilization += message.process.runtime;
                 node *new = newnode(message.process.id, message.process.priority,
@@ -431,75 +433,79 @@ int main(int argc, char *argv[])
                 // process_switched = true;
                 rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
-            printf(" :) \n");
-            if (endofthisqueuelevel)
+            if (endofthisqueuelevel == true)
             {
                 printf("OI1111\n");
+                printf("currentchain_index: %d\n", currentchain_index);
                 switch (currentchain_index)
                 {
                 case 0:
                     currentchain = 0;
-                    //currentchain = mlfl->Head0;
+                    // currentchain = mlfl->Head0;
                     break;
                 case 1:
                     currentchain = 1;
-                    //currentchain = mlfl->Head1;
+                    printf("in case 1 of node2\n");
+                    // currentchain = mlfl->Head1;
                     break;
                 case 2:
                     currentchain = 2;
-                    //currentchain = mlfl->Head2;
+                    // currentchain = mlfl->Head2;
                     break;
                 case 3:
                     currentchain = 3;
-                    //currentchain = mlfl->Head3;
+                    // currentchain = mlfl->Head3;
                     break;
                 case 4:
                     currentchain = 4;
-                    //currentchain = mlfl->Head4;
+                    // currentchain = mlfl->Head4;
                     break;
                 case 5:
                     currentchain = 5;
-                    //currentchain = mlfl->Head5;
+                    // currentchain = mlfl->Head5;
                     printf("in case 5 of node 1\n");
                     break;
                 case 6:
                     currentchain = 6;
-                    //currentchain = mlfl->Head6;
+                    // currentchain = mlfl->Head6;
                     break;
                 case 7:
                     currentchain = 7;
-                    //currentchain = mlfl->Head7;
+                    // currentchain = mlfl->Head7;
                     break;
                 case 8:
                     currentchain = 8;
-                    //currentchain = mlfl->Head8;
+                    // currentchain = mlfl->Head8;
                     break;
                 case 9:
                     currentchain = 9;
-                    //currentchain = mlfl->Head9;
+                    // currentchain = mlfl->Head9;
                     break;
                 case 10:
                     currentchain = 10;
-                    //currentchain = mlfl->Head10;
+                    // currentchain = mlfl->Head10;
                     break;
                 default:
                     printf("Out of range");
                     break;
                 }
-                ///PrintQueue(mlfl->linkedlist5);
+                /// PrintQueue(mlfl->linkedlist5);
                 process_switched = true;
+                printf("try to peek\n");
                 Running3 = PeekMLFLChainedList(currentchain, mlfl);
-                //printf("running3: %d", Running3->process->id);
+                // printf("running3: %d", Running3->process->id);
                 if (isEmptyQNODE(&Running3))
                 {
                     printf("OI1\n");
-                   Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl); // if this current level is empty, go grab next node
-                } 
+                    printf("current chain before grab next node: %d", currentchain);
+                    Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl); // if this current level is empty, go grab next node
+                    printf("current chain after grab next node: %d", currentchain);
+                }
                 if (Running3 == NULL)
                 { // hit that 'double null' so that level of the queue is done and need to advance to next level
                     printf("OI2\n");
-                    currentchain_index = currentchain_index + 1 % 11;
-                    //currentchain = currentchain_index;
+                    currentchain_index = (currentchain_index + 1) % 11;
+                    // currentchain = currentchain_index;
                     endofthisqueuelevel = true; // end of this queue
                 }
                 else
@@ -510,14 +516,64 @@ int main(int argc, char *argv[])
                 printf(" :) \n");
             }
             // actual running of a process happens here
-
-            if (Running3 != NULL && process_switched)
+            // printf("before second if statement\n");
+            if (Running3 != NULL && process_switched && Running3->process != NULL)
             {
-                printf("actual running of a process \n");
+                printf("6: ");
+                PrintQueue(mlfl->linkedlist6);
+                printf("4: ");
+                PrintQueue(mlfl->linkedlist4);
+                printf("3: ");
+                PrintQueue(mlfl->linkedlist3);
+                printf("2: ");
+                PrintQueue(mlfl->linkedlist2);
+                // printf("actual running of a process \n");
+                // if (Running3->process == NULL)
+                // {
+                //     printf("Running3->process is null \n");
+                //     switch (Running3->process->processpriority)
+                //     {
+                //     case 0:
+                //         if (mlfl->linkedlist0 = NULL)
+                //             continue;
+                //     case 1:
+                //         if (mlfl->linkedlist1 = NULL)
+                //             continue;
+                //     case 2:
+                //         if (mlfl->linkedlist2 = NULL)
+                //             continue;
+                //     case 3:
+                //         if (mlfl->linkedlist3 = NULL)
+                //             continue;
+                //     case 4:
+                //         if (mlfl->linkedlist4 = NULL)
+                //             continue;
+                //     case 5:
+                //         if (mlfl->linkedlist5 = NULL)
+                //             continue;
+                //     case 6:
+                //         if (mlfl->linkedlist6 = NULL)
+                //             continue;
+                //     case 7:
+                //         if (mlfl->linkedlist7 = NULL)
+                //             continue;
+                //     case 8:
+                //         if (mlfl->linkedlist8 = NULL)
+                //             continue;
+                //     case 9:
+                //         if (mlfl->linkedlist9 = NULL)
+                //             continue;
+                //     case 10:
+                //         if (mlfl->linkedlist10 = NULL)
+                //             continue;
+                //     }
+                // }
                 endofthisqueuelevel = false;
                 process_switched = false;
 
                 count = 0; // used to countup to each quantum
+                if (Running3->process != NULL)
+                    printf("there is a process in this level");
                 printf("running process %d\n", Running3->process->id);
                 quantum = atoi(argv[2]); // updating quantum cause see comment directly below
 
@@ -557,9 +613,10 @@ int main(int argc, char *argv[])
                     fprintf(logfile, "At time %d process %d resumed arr %d total %d remain %d wait %d\n", getClk(), Running3->process->id, Running3->process->arrivaltime, Running3->process->runtime, Running3->process->ReaminingTime, Running3->process->WaitingTime);
                 }
             }
+            // printf("after second if statement\n");
 
             /////////
-
+            // printf("before third if statement\n");
             if (Running3 != NULL && count == quantum) // reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
@@ -577,15 +634,25 @@ int main(int argc, char *argv[])
                     Running3->process->WaitingTime = (getClk() - Running3->process->arrivaltime) - (Running3->process->runtime - Running3->process->ReaminingTime);
                     fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running3->process->id, Running3->process->arrivaltime, Running3->process->runtime, Running3->process->WaitingTime, getClk() - Running3->process->arrivaltime, (float)(getClk() - Running3->process->arrivaltime) / Running3->process->runtime);
 
+                    printf("before clear finished processes\n");
                     clearfinishedprocesses(mlfl, Running3->process->processpriority);
+                    printf("after clear finished processes\n");
 
+                    Running3->process = NULL;
+                    printf("after nulling\n");
                     process_switched = true;
-                   Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl);
+                    if (Running3->next != NULL)
+                        Running3 = Running3->next;
+                    else
+                        Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl);
                     if (Running3 == NULL)
                     { // hit that 'double null' so that level of the queue is done and need to advance to next level
-                        currentchain_index = currentchain_index + 1 % 11;
+                        currentchain_index = (currentchain_index + 1) % 11;
+                        printf("end of this queue level");
                         endofthisqueuelevel = true;
+                        process_switched = false;
                     }
+                    printf("after grabbing next node\n");
                 }
                 else
                 {
@@ -610,22 +677,27 @@ int main(int argc, char *argv[])
                     }
 
                     process_switched = true;
-                    Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl);
+                    if (Running3->next != NULL)
+                        Running3 = Running3->next;
+                    else
+                        Running3 = grabnextnode_mlfl(&currentchain, Running3, mlfl);
                     if (Running3 == NULL)
                     { // hit that 'double null' so that level of the queue is done and need to advance to next level
-                        currentchain_index = currentchain_index + 1 % 11;
+                        currentchain_index = (currentchain_index + 1) % 11;
+                        printf("end of this queue level");
                         endofthisqueuelevel = true;
+                        process_switched = false;
                     }
                 }
             }
-
-            destroymlfl(mlfl);
-
-            wta /= atoi(argv[3]);
-            avg_wait /= atoi(argv[3]);
-            utilization /= getClk();
-            utilization *= 100;
+            // printf("after third if statement\n");
         }
+        destroymlfl(mlfl);
+
+        wta /= atoi(argv[3]);
+        avg_wait /= atoi(argv[3]);
+        utilization /= getClk();
+        utilization *= 100;
     }
     printf("exiting scheduler at time %d\n", getClk());
 
