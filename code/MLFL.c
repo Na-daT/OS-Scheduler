@@ -104,6 +104,7 @@ MLFL* newMLFL(){
     mlfl-> Head8 = create_chainedlinkedlist(mlfl->linkedlist8, mlfl->Head7);
     mlfl-> Head9 = create_chainedlinkedlist(mlfl->linkedlist9, mlfl->Head8);
     mlfl-> Head10 = create_chainedlinkedlist(mlfl->linkedlist10, mlfl->Head9);
+    return mlfl;
 }
 
 void destroymlfl(MLFL* mlfl){
