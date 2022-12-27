@@ -54,7 +54,7 @@ void push(QNode **head, QNode *temp)
         while (start->next != NULL &&
                start->next->process->Qpriority <= temp->process->Qpriority)
         { // <= instead of <
-        printf("inside push while\n");
+        //printf("inside push while\n");
             start = start->next;
         }
 
