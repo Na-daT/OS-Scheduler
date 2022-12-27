@@ -66,8 +66,8 @@ node* dequeueCQ(circular_queue *cq)
         temp->next->prev = temp->prev;
         cq->Head = temp->next;
     }
-    freeinsideCNODE(temp);
-    free(temp);
+    //freeinsideCNODE(temp);
+    //free(temp);
     cq->length -= 1;
     return data;
 }

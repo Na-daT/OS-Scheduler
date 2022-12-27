@@ -8,7 +8,14 @@
 #define HEADERS_H
 #include "headers.h"
 #endif
+// COORDINATE WITH PROCCESS GENERATOR DUDES:
+// forking parameters for scheduler and process
+// modify file path for message queue key
 
+// remaining of main work:
+// check/review equations for calculating time
+// make sure all nodes after done running are freed (mlfl and rr done)
+// debug all
 
 float utilization = 0, avg_wait = 0, wta = 0;
 
@@ -33,6 +40,12 @@ FILE *perf;
 
 int main(int argc, char *argv[])
 {
+
+    // printf("Sheduler started\n");
+    // printf("scheduler args count %d \n", argc);
+    // printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
+
+    // int clk = getClk();
 
     // creating the message queue
     int keyid = ftok(".", 65);
@@ -274,21 +287,23 @@ int main(int argc, char *argv[])
 
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                        int previd = -10;
-                        while (rec_value != -1)
-                        {
-                            printf("received: %d at time %d \n", message.process.id, getClk());
-                            utilization += message.process.runtime;
 
-                            node *new = newnode(message.process.id, message.process.priority,
-                                                message.process.arrival, message.process.runtime, waiting);
-                            if (previd == message.process.id) continue;
-                        int previd = message.process.id;
-                            // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
-                            enqueueCQ(circularque, new);
+            while (rec_value != -1)
+            {
+                printf("received: %d at time %d \n", message.process.id, getClk());
+                utilization += message.process.runtime;
+                node *new = newnode(message.process.id, message.process.priority,
+                                    message.process.arrival, message.process.runtime, waiting);
 
-                            int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                        } // check for new arrivals and addong to tail
+                // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
+                enqueueCQ(circularque, new);
+                // printf("heyy %d \n", circularque->Head->process->id);
+
+                // printf("running empty? %d cque empty? %d \n", isEmptyCnode(Running2), isEmptyCQ(circularque));
+
+                rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+            }
+
             // add RR LOGIC
             if (isEmptyCnode(Running2) && !isEmptyCQ(circularque))
             {
@@ -366,7 +381,6 @@ int main(int argc, char *argv[])
                         fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running2->process->id, Running2->process->arrivaltime, Running2->process->runtime, Running2->process->ReaminingTime, Running2->process->WaitingTime);
 
                         int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                        int previd = -10;
                         while (rec_value != -1)
                         {
                             printf("received: %d at time %d \n", message.process.id, getClk());
@@ -374,8 +388,7 @@ int main(int argc, char *argv[])
 
                             node *new = newnode(message.process.id, message.process.priority,
                                                 message.process.arrival, message.process.runtime, waiting);
-                            if (previd == message.process.id) continue;
-                        int previd = message.process.id;
+
                             // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
                             enqueueCQ(circularque, new);
 
@@ -433,7 +446,7 @@ int main(int argc, char *argv[])
 
                         node *new = newnode(message.process.id, message.process.priority,
                                             message.process.arrival, message.process.runtime, waiting);
-                                            if (previd == message.process.id) continue;
+                                            if (previd == message.process.id) break;
                         int previd = message.process.id;
 
                         enqueueMLFL(mlfl, new);
@@ -525,15 +538,55 @@ int main(int argc, char *argv[])
             // actual running of a process happens here
             if (Running3 != NULL && process_switched && Running3->process != NULL)
             {
-                //printf("5: ");
-                //PrintQueue(mlfl->linkedlist6);
-                //printf("4: ");
-                //PrintQueue(mlfl->linkedlist4);
-                //printf("3: ");
-                //PrintQueue(mlfl->linkedlist3);
-                //printf("2: ");
-                //PrintQueue(mlfl->linkedlist2);
-                
+                printf("5: ");
+                PrintQueue(mlfl->linkedlist6);
+                printf("4: ");
+                PrintQueue(mlfl->linkedlist4);
+                printf("3: ");
+                PrintQueue(mlfl->linkedlist3);
+                printf("2: ");
+                PrintQueue(mlfl->linkedlist2);
+                // printf("actual running of a process \n");
+                // if (Running3->process == NULL)
+                // {
+                //     printf("Running3->process is null \n");
+                //     switch (Running3->process->processpriority)
+                //     {
+                //     case 0:
+                //         if (mlfl->linkedlist0 = NULL)
+                //             break;
+                //     case 1:
+                //         if (mlfl->linkedlist1 = NULL)
+                //             break;
+                //     case 2:
+                //         if (mlfl->linkedlist2 = NULL)
+                //             break;
+                //     case 3:
+                //         if (mlfl->linkedlist3 = NULL)
+                //             break;
+                //     case 4:
+                //         if (mlfl->linkedlist4 = NULL)
+                //             break;
+                //     case 5:
+                //         if (mlfl->linkedlist5 = NULL)
+                //             break;
+                //     case 6:
+                //         if (mlfl->linkedlist6 = NULL)
+                //             break;
+                //     case 7:
+                //         if (mlfl->linkedlist7 = NULL)
+                //             break;
+                //     case 8:
+                //         if (mlfl->linkedlist8 = NULL)
+                //             break;
+                //     case 9:
+                //         if (mlfl->linkedlist9 = NULL)
+                //             break;
+                //     case 10:
+                //         if (mlfl->linkedlist10 = NULL)
+                //             break;
+                //     }
+                // }
                 endofthisqueuelevel = false;
                 process_switched = false;
 
@@ -637,7 +690,7 @@ int main(int argc, char *argv[])
 
                         node *new = newnode(message.process.id, message.process.priority,
                                             message.process.arrival, message.process.runtime, waiting);
-                                            if (previd == message.process.id) continue;
+                                            if (previd == message.process.id) break;
                         int previd = message.process.id;
 
                         enqueueMLFL(mlfl, new);
