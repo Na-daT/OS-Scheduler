@@ -13,6 +13,7 @@
 // highest Qpriority from the list
 void pop(QNode **head)
 {
+    if(head == NULL || *(head) == NULL) {printf("aaaaaaaaaaaaaaaaaaaa \n"); return;}
     QNode *temp = *head;
     (*head) = (*head)->next;
     // free(temp); //yes i just want it to update the queue and not free the head
@@ -26,6 +27,8 @@ bool isEmptyQNODE(struct QNode **head)
 // Function to push according to Qpriority
 void push(QNode **head, QNode *temp)
 {
+    if(head == NULL || *(head) == NULL) {printf("aaaaaaaaaaaaaaaaaaaa \n"); return;}
+    printf("inside push\n");
     QNode *start = (*head);
     // printf("trying to insert new node in linked list \n");
     // printf("process id %d \n ", temp->process->id);
@@ -51,6 +54,7 @@ void push(QNode **head, QNode *temp)
         while (start->next != NULL &&
                start->next->process->Qpriority <= temp->process->Qpriority)
         { // <= instead of <
+        printf("inside push while\n");
             start = start->next;
         }
 
