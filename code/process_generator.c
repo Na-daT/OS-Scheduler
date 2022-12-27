@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         i++;
     }
 
-    pause();//why?
+    pause(); // why?
     // releasing communication with the clock module
     destroyClk(1);
 

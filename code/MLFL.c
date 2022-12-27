@@ -441,54 +441,176 @@ QNode *PeekMLFLChainedList(int linkedListindex, MLFL *mlfl)
 
 void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
 {
+    if(level == NULL)
+        return;
+    printf("clearfinishedprocesses_in_a_priolevel\n");
     if (level && level->process->Status == finished)
     {
+        printf("inside if of clearfinishedprocesses_in_a_priolevel\n");
         switch (level->process->processpriority)
         {
         case 0:
-            mlfl->linkedlist0 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist0 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist0 = NULL;
+                level = NULL;
+                break;
+            }
         case 1:
-            mlfl->linkedlist1 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist1 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist1 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist1 = NULL;
+            // level = NULL;
+            // break;
         case 2:
-            mlfl->linkedlist2 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist2 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist2 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist2 = NULL;
+            // level = NULL;
+            // break;
         case 3:
-            mlfl->linkedlist3 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist3 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist3 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist3 = NULL;
+            // level = NULL;
+            // break;
         case 4:
-            mlfl->linkedlist4 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist4 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist4 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist4 = NULL;
+            // level = NULL;
+            // break;
         case 5:
-            mlfl->linkedlist5 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist5 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist5 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist5 = NULL;
+            // level = NULL;
+            // break;
         case 6:
-            mlfl->linkedlist6 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist6 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist6 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist6 = NULL;
+            // level = NULL;
+            // break;
         case 7:
-            mlfl->linkedlist7 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist7 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist7 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist7 = NULL;
+            // level = NULL;
+            // break;
         case 8:
-            mlfl->linkedlist8 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist8 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist8 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist8 = NULL;
+            // level = NULL;
+            // break;
         case 9:
-            mlfl->linkedlist9 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist9 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist9 = NULL;
+                level = NULL;
+                break;
+            }
+            // mlfl->linkedlist9 = NULL;
+            // level = NULL;
+            // break;
         case 10:
-            mlfl->linkedlist10 = NULL;
-            level = NULL;
-            break;
+            if(level->next != NULL)
+            {
+                mlfl->linkedlist10 = level->next;
+                break;
+            }
+            else
+            {
+                mlfl->linkedlist10 = NULL;
+                level = NULL;
+                break;
+            }   
+            // mlfl->linkedlist10 = NULL;
+            // level = NULL;
+            // break;
         }
         // printf("clearfinishedprocesses_in_a_priolevel\n");
         // printf("level->process->id %d\n", level->process->id);
@@ -498,6 +620,9 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
         //  level = temp->next;
         //  freeinsideMLFL(level);
         free(level);
+        printf("done clearfinishedprocesses_in_a_priolevel\n");
+        if (level == NULL)
+            printf("level is null\n");
         return;
     } // dealing with head is finished
 
@@ -523,7 +648,7 @@ void clearfinishedprocesses(MLFL *mlfl, int prio)
     // head0 1 unfinished
     // head1 1 finished 0 unfinished
     // corner case with dequeueing
-
+    printf("clearfinishedprocesses priority: %d\n", prio);
     if (prio == 0)
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist0, mlfl);
     if (prio == 1)
@@ -531,7 +656,11 @@ void clearfinishedprocesses(MLFL *mlfl, int prio)
     if (prio == 2)
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2, mlfl);
     if (prio == 3)
+    {
+        if(mlfl->linkedlist3 == NULL)
+            printf("linked list 3 is null\n");
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3, mlfl);
+    }
     if (prio == 4)
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist4, mlfl);
     if (prio == 5)

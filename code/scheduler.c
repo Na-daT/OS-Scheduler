@@ -75,6 +75,8 @@ int main(int argc, char *argv[])
 
             while (rec_value != -1) // get all process that arrive at current clk time
             {
+                while (getClk() < 1)
+                    ;
                 utilization += message.process.runtime;
                 printf("received: %d at time %d \n", message.process.id, getClk());
 
@@ -115,12 +117,13 @@ int main(int argc, char *argv[])
                     perror("The error is: \n");
                     exit(-1);
                 }
-
-                raise(SIGSTOP);
-                Running->process->processPID = pid;
+                printf("process %d started at time %d \n", Running->process->id, getClk());
+                 Running->process->processPID = pid;
                 Running->process->Status = started;
                 Running->process->WaitingTime = (getClk() - Running->process->arrivaltime) - (Running->process->runtime - Running->process->ReaminingTime);
                 fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
+
+                raise(SIGSTOP);
             }
         }
 
@@ -400,6 +403,7 @@ int main(int argc, char *argv[])
         signal(SIGUSR2, clockchangeMLFL);
         processcount = atoi(argv[3]);
         int quantum = atoi(argv[2]);
+        printf("quantum %d \n", quantum);
 
         // MLFLNode* Running3;
         bool endofthisqueuelevel = true;
@@ -516,10 +520,9 @@ int main(int argc, char *argv[])
                 printf(" :) \n");
             }
             // actual running of a process happens here
-            // printf("before second if statement\n");
             if (Running3 != NULL && process_switched && Running3->process != NULL)
             {
-                printf("6: ");
+                printf("5: ");
                 PrintQueue(mlfl->linkedlist6);
                 printf("4: ");
                 PrintQueue(mlfl->linkedlist4);
