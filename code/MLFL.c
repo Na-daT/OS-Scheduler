@@ -33,18 +33,6 @@ typedef struct MLFL
     QNode *linkedlist9;
     QNode *linkedlist10;
 
-    // chained_linkedlist *Head0; // use an array with currentchain_index for each instead?
-    // chained_linkedlist *Head1;
-    // chained_linkedlist *Head2;
-    // chained_linkedlist *Head3;
-    // chained_linkedlist *Head4;
-    // chained_linkedlist *Head5;
-    // chained_linkedlist *Head6;
-    // chained_linkedlist *Head7;
-    // chained_linkedlist *Head8;
-    // chained_linkedlist *Head9;
-    // chained_linkedlist *Head10;
-
 } MLFL;
 
 QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
@@ -53,49 +41,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
     // head1 0 process
     // head2 1 process //corner case
     // a priority level in the middle with no processes
-    // printf("grabbing next node\n");
-    // if (currentlyrunning != NULL && (*currentlyrunning)->next)
-    // { // first null
-    //     printf("in first null\n");
-    //     currentlyrunning = &((*currentlyrunning)->next);
-    //     return;
-    // }
-    // else
-    // {
-    //     printf("in else conf in grabnextnode\n");
-    //     while (currentchain->next)
-    //     { // second null
-    //         printf("stuck in while of second null\n");
-    //         currentchain = currentchain->next;
-    //         if (currentchain->Head != NULL)
-    //         {
-    //             currentlyrunning = &(currentchain->Head);
-    //             return;
-    //         }
-    //     }
-    // }
-    // currentlyrunning = NULL;
-    // printf("hit double null\n");
-    // return;
-    // if currentlyrunning returns null then we have hit the 'double null' and then we are at the end of all chains
-    // and we should run lesser prio chain next ex: head0 -> head1 (using switch case inside scheduler part)
-
-    // if (currentlyrunning != NULL && currentlyrunning->next != NULL)
-    // { // first null
-    //     printf("in first null\n");
-    //     currentlyrunning = currentlyrunning->next;
-
-    //     if (currentlyrunning != NULL && currentlyrunning->next == NULL)
-    //     {
-    //         printf("in if loop dec currentchain\n");
-    //         (*currentchain)--;
-    //     }
-    //     // printf("process id after first null: %d\n", currentlyrunning->process->id);
-    //     printf("currentchain after first null: %d\n", *currentchain);
-    //     return currentlyrunning;
-    // }
-    // else
-    // {
+   
     while (*currentchain > -1)
     {
         printf("while loop in grabnextnode\n");
@@ -257,17 +203,7 @@ MLFL *newMLFL()
     mlfl->linkedlist8 = NULL;
     mlfl->linkedlist9 = NULL;
     mlfl->linkedlist10 = NULL;
-    // mlfl->Head0 = create_chainedlinkedlist(&(mlfl->linkedlist0), NULL);
-    // mlfl->Head1 = create_chainedlinkedlist(&(mlfl->linkedlist1), (mlfl->Head0));
-    // mlfl->Head2 = create_chainedlinkedlist(&(mlfl->linkedlist2), (mlfl->Head1));
-    // mlfl->Head3 = create_chainedlinkedlist(&(mlfl->linkedlist3), (mlfl->Head2));
-    // mlfl->Head4 = create_chainedlinkedlist(&(mlfl->linkedlist4), (mlfl->Head3));
-    // mlfl->Head5 = create_chainedlinkedlist(&(mlfl->linkedlist5), (mlfl->Head4));
-    // mlfl->Head6 = create_chainedlinkedlist(&(mlfl->linkedlist6), (mlfl->Head5));
-    // mlfl->Head7 = create_chainedlinkedlist(&(mlfl->linkedlist7), (mlfl->Head6));
-    // mlfl->Head8 = create_chainedlinkedlist(&(mlfl->linkedlist8), (mlfl->Head7));
-    // mlfl->Head9 = create_chainedlinkedlist(&(mlfl->linkedlist9), (mlfl->Head8));
-    // mlfl->Head10 = create_chainedlinkedlist(&(mlfl->linkedlist10), (mlfl->Head9));
+    
     return mlfl;
 }
 
