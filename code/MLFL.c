@@ -273,7 +273,7 @@ MLFL *newMLFL()
 
 void destroymlfl(MLFL *mlfl)
 {
-    destroyPQ(mlfl->linkedlist0);
+    /*destroyPQ(mlfl->linkedlist0);
     destroyPQ(mlfl->linkedlist1);
     destroyPQ(mlfl->linkedlist2);
     destroyPQ(mlfl->linkedlist3);
@@ -283,7 +283,7 @@ void destroymlfl(MLFL *mlfl)
     destroyPQ(mlfl->linkedlist7);
     destroyPQ(mlfl->linkedlist8);
     destroyPQ(mlfl->linkedlist9);
-    destroyPQ(mlfl->linkedlist10);
+    destroyPQ(mlfl->linkedlist10);*/
 
     // free(mlfl->Head0);
     // free(mlfl->Head1);
@@ -297,7 +297,7 @@ void destroymlfl(MLFL *mlfl)
     // free(mlfl->Head9);
     // free(mlfl->Head10);
 
-    free(mlfl);
+    //free(mlfl);
 }
 
 void enqueueMLFL(MLFL *mlfl, node *n)

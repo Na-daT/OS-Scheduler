@@ -287,23 +287,21 @@ int main(int argc, char *argv[])
 
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                        int previd = -10;
+                        while (rec_value != -1)
+                        {
+                            printf("received: %d at time %d \n", message.process.id, getClk());
+                            utilization += message.process.runtime;
 
-            while (rec_value != -1)
-            {
-                printf("received: %d at time %d \n", message.process.id, getClk());
-                utilization += message.process.runtime;
-                node *new = newnode(message.process.id, message.process.priority,
-                                    message.process.arrival, message.process.runtime, waiting);
+                            node *new = newnode(message.process.id, message.process.priority,
+                                                message.process.arrival, message.process.runtime, waiting);
+                            if (previd == message.process.id) continue;
+                        int previd = message.process.id;
+                            // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
+                            enqueueCQ(circularque, new);
 
-                // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
-                enqueueCQ(circularque, new);
-                // printf("heyy %d \n", circularque->Head->process->id);
-
-                // printf("running empty? %d cque empty? %d \n", isEmptyCnode(Running2), isEmptyCQ(circularque));
-
-                rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-            }
-
+                            int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                        } // check for new arrivals and addong to tail
             // add RR LOGIC
             if (isEmptyCnode(Running2) && !isEmptyCQ(circularque))
             {
@@ -381,6 +379,7 @@ int main(int argc, char *argv[])
                         fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running2->process->id, Running2->process->arrivaltime, Running2->process->runtime, Running2->process->ReaminingTime, Running2->process->WaitingTime);
 
                         int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                        int previd = -10;
                         while (rec_value != -1)
                         {
                             printf("received: %d at time %d \n", message.process.id, getClk());
@@ -388,7 +387,8 @@ int main(int argc, char *argv[])
 
                             node *new = newnode(message.process.id, message.process.priority,
                                                 message.process.arrival, message.process.runtime, waiting);
-
+                            if (previd == message.process.id) continue;
+                        int previd = message.process.id;
                             // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
                             enqueueCQ(circularque, new);
 
@@ -437,23 +437,22 @@ int main(int argc, char *argv[])
                 ;
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-            // if (rec_value == -1)
-            //     printf(" rec value is -1 :) \n");
-            while (rec_value != -1)
-            {
-                printf("are we stuck in small while loop? \n");
-                printf("received: %d at time %d \n", message.process.id, getClk());
-                utilization += message.process.runtime;
-                node *new = newnode(message.process.id, message.process.priority,
-                                    message.process.arrival, message.process.runtime, waiting);
+            
+                    int previd = -10;
+                    while (rec_value != -1)
+                    {
+                        printf("received: %d at time %d \n", message.process.id, getClk());
+                        utilization += message.process.runtime;
 
-                enqueueMLFL(mlfl, new);
-                printf("oi\n");
-                rec_value = 1;
-                // int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                // process_switched = true;
-                rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-            }
+                        node *new = newnode(message.process.id, message.process.priority,
+                                            message.process.arrival, message.process.runtime, waiting);
+                                            if (previd == message.process.id) continue;
+                        int previd = message.process.id;
+
+                        enqueueMLFL(mlfl, new);
+
+                        rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                    }
             if (endofthisqueuelevel == true)
             {
                 printf("OI1111\n");
@@ -683,6 +682,7 @@ int main(int argc, char *argv[])
                     fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running3->process->id, Running3->process->arrivaltime, Running3->process->runtime, Running3->process->ReaminingTime, Running3->process->WaitingTime);
 
                     int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                    int previd = -10;
                     while (rec_value != -1)
                     {
                         printf("received: %d at time %d \n", message.process.id, getClk());
@@ -690,10 +690,12 @@ int main(int argc, char *argv[])
 
                         node *new = newnode(message.process.id, message.process.priority,
                                             message.process.arrival, message.process.runtime, waiting);
+                                            if (previd == message.process.id) continue;
+                        int previd = message.process.id;
 
                         enqueueMLFL(mlfl, new);
 
-                        int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                        rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
                     }
 
                     process_switched = true;
