@@ -547,7 +547,47 @@ int main(int argc, char *argv[])
                 PrintQueue(mlfl->linkedlist3);
                 printf("2: ");
                 PrintQueue(mlfl->linkedlist2);
-                
+                // printf("actual running of a process \n");
+                // if (Running3->process == NULL)
+                // {
+                //     printf("Running3->process is null \n");
+                //     switch (Running3->process->processpriority)
+                //     {
+                //     case 0:
+                //         if (mlfl->linkedlist0 = NULL)
+                //             continue;
+                //     case 1:
+                //         if (mlfl->linkedlist1 = NULL)
+                //             continue;
+                //     case 2:
+                //         if (mlfl->linkedlist2 = NULL)
+                //             continue;
+                //     case 3:
+                //         if (mlfl->linkedlist3 = NULL)
+                //             continue;
+                //     case 4:
+                //         if (mlfl->linkedlist4 = NULL)
+                //             continue;
+                //     case 5:
+                //         if (mlfl->linkedlist5 = NULL)
+                //             continue;
+                //     case 6:
+                //         if (mlfl->linkedlist6 = NULL)
+                //             continue;
+                //     case 7:
+                //         if (mlfl->linkedlist7 = NULL)
+                //             continue;
+                //     case 8:
+                //         if (mlfl->linkedlist8 = NULL)
+                //             continue;
+                //     case 9:
+                //         if (mlfl->linkedlist9 = NULL)
+                //             continue;
+                //     case 10:
+                //         if (mlfl->linkedlist10 = NULL)
+                //             continue;
+                //     }
+                // }
                 endofthisqueuelevel = false;
                 process_switched = false;
 
