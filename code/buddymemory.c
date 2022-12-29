@@ -19,7 +19,7 @@ every time a process terminates call the remove function
 nextpowerof2 is used for printing
 
 when you try to preempt a process, try inserting if it succeeds then switch the currently running process with the new one, else then don't switch and don't create
-the new process (insert returns a -1 on failure)
+the new process (insert returns a ********* -1 ********* on failure) (0 is a valid pos) (so don't use false/true)
 
 for printing 
 when creating
