@@ -37,6 +37,7 @@ void clockchangeRR(int signum);
 
 FILE *logfile;
 FILE *perf;
+FILE *memOutlog;
 
 int main(int argc, char *argv[])
 {
@@ -54,9 +55,11 @@ int main(int argc, char *argv[])
     // open the output file
     logfile = fopen("./scheduler.log", "w");
     perf = fopen("./scheduler.perf", "w");
+    memOutlog = fopen("./mem.log", "w");
 
     // printing the header of output file
     fprintf(logfile, "#At time x process y state arr w total z remain y wait k\n");
+    fprintf(memOutlog, "#At time x a l l o c a t e d y bytes f o r process z from i to j\n");
 
     // TODO: implement the scheduler.
 
@@ -728,6 +731,7 @@ int main(int argc, char *argv[])
 
     fclose(perf);
     fclose(logfile);
+    fclose(memOutlog);
 
     // TODO: upon termination release the clock resources.
     destroyClk(1);
