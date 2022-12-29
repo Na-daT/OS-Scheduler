@@ -31,7 +31,8 @@ typedef struct node
     int quantum; // RR
 
     int schedpid;
-    // int Live_Priority; //mlfl //surprisngly don't need it
+    int memsize;        // memory size taken by process
+    int memstart;       // index of starting location in memory for process
 
     // Lower values indicate higher Qpriority
     int Qpriority;
@@ -60,7 +61,7 @@ typedef struct CNode
 } MLFLNode;*/
 
 node *newnode(int id, int Processpriority, int arrival, int runtime,
-              enum status status)
+              int Memsize, enum status status)
 {
     node *temp = (node *)malloc(sizeof(node));
     temp->id = id;
@@ -72,6 +73,10 @@ node *newnode(int id, int Processpriority, int arrival, int runtime,
     temp->WaitingTime = 0;
     temp->Status = status;
     temp->schedpid = 0;
+
+    temp->memsize = Memsize;
+    temp->memstart = -1;
+
     return temp;
 }
 
@@ -125,12 +130,16 @@ QNode *newNodeMLFL(node *input)
 
 void freeinsideCNODE(CNode *cnode)
 {
+    if (cnode == NULL)
+        return;
     if (cnode->process != NULL)
         free(cnode->process);
     return;
 }
 void freeinsideQNODE(QNode *qnode)
 {
+    if (qnode == NULL)
+        return;
     if (qnode->process != NULL)
         free(qnode->process);
     return;

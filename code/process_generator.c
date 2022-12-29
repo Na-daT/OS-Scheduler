@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     {
         size++;
     }
-    size /= 4;
+    size /= 5;
 
     // creating the array which will hold the processes
     struct Process *ProcessArray = (struct Process *)malloc(size * sizeof(struct Process));
@@ -52,6 +52,8 @@ int main(int argc, char *argv[])
         ProcessArray[index].runtime = filechar;
         fscanf(fp, "%d", &filechar);
         ProcessArray[index].priority = filechar;
+        fscanf(fp, "%d", &filechar);
+        ProcessArray[index].memsize = filechar;
 
         index++;
     }
@@ -97,7 +99,7 @@ int main(int argc, char *argv[])
             perror("Failed to send. The error is ");
         }
         printf("sent: %d at time %d\n", message.process.id, getClk());
-        printf("I am here in process generator \n");
+        //printf("I am here in process generator \n");
         i++;
     }
 

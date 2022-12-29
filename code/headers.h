@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include "time.h"
+#include <string.h>
 
 typedef short bool;
 #define true 1
@@ -33,6 +34,7 @@ typedef struct Process
     int arrival;
     int runtime;
     int priority;
+    int memsize;
 } Process;
 
 struct msgbuffer

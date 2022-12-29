@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
                 node *new = newnode(message.process.id, message.process.priority,
                                     message.process.arrival, message.process.runtime, waiting);
 
-                QNode *newqnode = newNodeHPF(new);
+                QNode *newqnode = newNodeSJF(new);
                 if (pqHead == NULL)
                     pqHead = newqnode;
                 else
