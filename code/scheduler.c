@@ -8,14 +8,7 @@
 #define HEADERS_H
 #include "headers.h"
 #endif
-// COORDINATE WITH PROCCESS GENERATOR DUDES:
-// forking parameters for scheduler and process
-// modify file path for message queue key
 
-// remaining of main work:
-// check/review equations for calculating time
-// make sure all nodes after done running are freed (mlfl and rr done)
-// debug all
 
 float utilization = 0, avg_wait = 0, wta = 0;
 
