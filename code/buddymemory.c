@@ -7,6 +7,8 @@ unsigned int** emptySlots;
 unsigned int* numberEmptySlots;
 
 /*
+if you want to ignore the effect of the memsize set it to 1 not 0 
+
 buddy_start, buddy_remove, buddy_insert, nextPowerOf2
 use those
 rest are helper functions
