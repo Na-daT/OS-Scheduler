@@ -97,15 +97,6 @@ int init_slots__(int size, unsigned int*** _emptySlots, unsigned int** _numberEm
     */
     emptySlots[i] = (unsigned int*)malloc(size * sizeof(unsigned int));
 
-    // if (emptySlots[i] == NULL) {
-    //   for (int j = i - 1; j >= 0; j--)
-    //     free(emptySlots[j]);
-
-    //   free(emptySlots);
-
-    //   return -1;
-    // }
-
     size /= 2;
   }
 
