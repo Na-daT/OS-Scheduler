@@ -1,7 +1,7 @@
 // #include "linkedlist.c"
 #ifndef pqueue
 #define pqueue
-#include "pqueue.c"
+#include "data_structures/pqueue.c"
 #endif
 typedef struct chained_linkedlist
 {

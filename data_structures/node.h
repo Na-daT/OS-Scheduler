@@ -1,6 +1,6 @@
 #ifndef HEADERS_H
 #define HEADERS_H
-#include "headers.h"
+#include "../headers.h"
 #endif
 
 enum status

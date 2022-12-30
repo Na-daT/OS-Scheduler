@@ -1,14 +1,15 @@
-#ifndef pqueue
-#define pqueue
-#include "pqueue.c"
-#endif
-#include "MLFL.c"
-#include "cqueue.c"
-#include "buddymemory.c"
 #ifndef HEADERS_H
 #define HEADERS_H
 #include "headers.h"
 #endif
+#ifndef pqueue
+#define pqueue
+#include "data_structures/pqueue.c"
+#endif
+#include "data_structures/cqueue.c"
+#include "scheduling_algorithms/MLFL.c"
+#include "buddymemory.c"
+
 
 
 float utilization = 0, avg_wait = 0, wta = 0;
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
     initClk();
 
     // TODO: implement the scheduler.
-    
+
     ///////////////////////////////// SJF //non premitave
     if (atoi(argv[1]) == SJF)
     {
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
 
             while (rec_value != -1) // get all process that arrive at current clk time
             {
-                
+
                 utilization += message.process.runtime;
                 printf("received: %d at time %d \n", message.process.id, getClk());
 
