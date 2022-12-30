@@ -4,6 +4,7 @@
 #endif
 #include "MLFL.c"
 #include "cqueue.c"
+#include "buddymemory.c"
 #ifndef HEADERS_H
 #define HEADERS_H
 #include "headers.h"
@@ -34,13 +35,6 @@ FILE *memOutlog;
 
 int main(int argc, char *argv[])
 {
-
-    // printf("Sheduler started\n");
-    // printf("scheduler args count %d \n", argc);
-    // printf("scheduler args %s %s %s \n", argv[1], argv[2], argv[3]);
-
-    // int clk = getClk();
-
     // creating the message queue
     int keyid = ftok(".", 65);
     int msqid = msgget(keyid, 0666 | IPC_CREAT);
@@ -54,10 +48,13 @@ int main(int argc, char *argv[])
     fprintf(logfile, "#At time x process y state arr w total z remain y wait k\n");
     fprintf(memOutlog, "#At time x a l l o c a t e d y bytes f o r process z from i to j\n");
 
-    // TODO: implement the scheduler.
+    buddy_start();
+    initClk();
 
+    // TODO: implement the scheduler.
+    
     ///////////////////////////////// SJF //non premitave
-    if (atoi(argv[1]) == 1)
+    if (atoi(argv[1]) == SJF)
     {
         // printf("starting sjf \n");
         signal(SIGUSR1, ProcessTerminated2);
@@ -66,22 +63,21 @@ int main(int argc, char *argv[])
         processcount = atoi(argv[3]);
         QNode *pqHead = NULL; // headofqueue
         // QNode* Running = NULL; // process currently running
-        initClk();
+        while (getClk() < 1) {}
         while (processcount > 0)
         {
-
+            while (getClk() < 1) {}
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
 
             while (rec_value != -1) // get all process that arrive at current clk time
             {
-                while (getClk() < 1)
-                    ;
+                
                 utilization += message.process.runtime;
                 printf("received: %d at time %d \n", message.process.id, getClk());
 
                 node *new = newnode(message.process.id, message.process.priority,
-                                    message.process.arrival, message.process.runtime, waiting);
+                                                message.process.arrival, message.process.runtime, message.process.memsize, waiting);
 
                 QNode *newqnode = newNodeSJF(new);
                 if (pqHead == NULL)
@@ -125,6 +121,8 @@ int main(int argc, char *argv[])
 
                 raise(SIGSTOP);
             }
+            fflush(memOutlog); 
+            fflush(logfile);
         }
 
         destroyPQ(pqHead);
@@ -135,7 +133,7 @@ int main(int argc, char *argv[])
         utilization *= 100;
     }
 
-    if (atoi(argv[1]) == 2) // hpf Preemptive
+    if (atoi(argv[1]) == HPF) // hpf Preemptive
     {
         // printf("starting hpf \n");
         signal(SIGUSR1, ProcessTerminated);
@@ -146,7 +144,7 @@ int main(int argc, char *argv[])
         
         // QNode* Running = NULL; // process currently running
         int last_runclk = 0;
-        initClk();
+        while (getClk() < 1) {}
         while (processcount > 0)
         {
             // IMPORTANT TO DO
@@ -164,7 +162,7 @@ int main(int argc, char *argv[])
                 printf("received: %d at time %d \n", message.process.id, getClk());
 
                 node *new = newnode(message.process.id, message.process.priority,
-                                    message.process.arrival, message.process.runtime, waiting);
+                                                message.process.arrival, message.process.runtime, message.process.memsize, waiting);
 
                 QNode *newqnode = newNodeHPF(new);
                 if (pqHead == NULL)
@@ -255,6 +253,8 @@ int main(int argc, char *argv[])
                     fprintf(logfile, "At time %d process %d resumed arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
                 }
             }
+            fflush(memOutlog); 
+            fflush(logfile);
         }
 
         wta /= atoi(argv[3]);
@@ -266,47 +266,44 @@ int main(int argc, char *argv[])
         printf("done destroying\n");
     }
 
-    if (atoi(argv[1]) == 3) // Round Robin (RR)
+    if (atoi(argv[1]) == RR) // Round Robin (RR)
     {
-        // printf("starting rr \n");
+        signal(SIGUSR2, clockchangeRR);
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
         // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
-        signal(SIGUSR2, clockchangeRR);
+        
         processcount = atoi(argv[3]);
         circular_queue *circularque = create_circular_queue(processcount);
-        // CNode* Running2 = NULL;
         int quantum = atoi(argv[2]);
-        initClk();
+        int previd;
+        
         while (processcount > 0)
         {
-
+            while (getClk() < 1) {}
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+            previd = -10;
 
             while (rec_value != -1)
             {
+                if (previd == message.process.id) break;
+                previd = message.process.id;
                 printf("received: %d at time %d \n", message.process.id, getClk());
                 utilization += message.process.runtime;
                 node *new = newnode(message.process.id, message.process.priority,
-                                    message.process.arrival, message.process.runtime, waiting);
-
-                // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
+                                    message.process.arrival, message.process.runtime, message.process.memsize, waiting);
                 enqueueCQ(circularque, new);
-                // printf("heyy %d \n", circularque->Head->process->id);
 
-                // printf("running empty? %d cque empty? %d \n", isEmptyCnode(Running2), isEmptyCQ(circularque));
-
+                
                 rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
 
-            // add RR LOGIC
             if (isEmptyCnode(Running2) && !isEmptyCQ(circularque))
             {
-                // printf("heyy %d \n", circularque->Head->process->id);
+                
                 Running2 = peekCQ(circularque); // return pointer to process
                 count = 0;                      // used to countup to each quantum
-                // printf("running process %d\n", Running2->process->id);
                 quantum = atoi(argv[2]); // updating quantum cause see comment directly below
 
                 if (Running2->process->ReaminingTime < quantum) // process's remaining time less than quantum so gonna run it for only that
@@ -316,46 +313,58 @@ int main(int argc, char *argv[])
 
                 if (Running2->process->processPID == -1)
                 {
-                    printf("forking\n");
-                    int pid = fork();
-                    if (pid == 0)
-                    {
-                        char *runtime_char = malloc(sizeof(char));
-                        sprintf(runtime_char, "%d", Running2->process->runtime);
-                        // printf("runtime %s of process %d time rn %d\n", runtime_char, getpid(), getClk());
-                        char *arg[] = {runtime_char, NULL};
-                        int execute = execv("./process.out", arg);
-                        if (execute == -1)
-                            printf("failed to execute process\n");
-                        perror("The error is: \n");
-                        exit(-1);
+
+                    int pos = buddy_insert(Running2->process->memsize);
+                    if (pos == -1) {
+                        //printf("failed to allocate  %d, %d is next process \n",Running2->process->id, Running2->next->process->id);
+                        fprintf(memOutlog, "At time %d failed to allocate %d bytes for process %d due to lack of space\n",
+                            getClk(), Running2->process->memsize, Running2->process->id);
+                        advanceCQhead(circularque); 
+                        Running2 = NULL;
                     }
-                    Running2->process->processPID = pid;
-                    Running2->process->Status = started;
-                    Running2->process->WaitingTime = (getClk() - Running2->process->arrivaltime) - (Running2->process->runtime - Running2->process->ReaminingTime);
-                    raise(SIGSTOP);
-                    fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running2->process->id, Running2->process->arrivaltime, Running2->process->runtime, Running2->process->ReaminingTime, Running2->process->WaitingTime);
+                    if(Running2 != NULL){
+
+                        Running2->process->memstart = pos;
+
+                        printf("forking\n");
+                        int pid = fork();
+                        if (pid == 0)
+                        {
+                            char *runtime_char = malloc(sizeof(char));
+                            sprintf(runtime_char, "%d", Running2->process->runtime);
+                            char *arg[] = {runtime_char, NULL};
+                            int execute = execv("./process.out", arg);
+                            if (execute == -1)
+                                printf("failed to execute process\n");
+                            perror("The error is: \n");
+                            exit(-1);
+                        }
+                        Running2->process->processPID = pid;
+                        Running2->process->Status = started;
+                        Running2->process->WaitingTime = (getClk() - Running2->process->arrivaltime) - (Running2->process->runtime - Running2->process->ReaminingTime);
+                        raise(SIGSTOP);
+                        int NextPowerOfTwo = __nextPowerOf2(Running2->process->memsize);
+                        fprintf(memOutlog, "At time %d allocated %d bytes for process %d from %d to %d\n",
+                            getClk(), Running2->process->memsize, Running2->process->id, Running2->process->memstart, Running2->process->memstart + NextPowerOfTwo - 1);
+                        fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running2->process->id, Running2->process->arrivaltime, Running2->process->runtime, Running2->process->ReaminingTime, Running2->process->WaitingTime);
+                    }
+                    
                 }
                 else
                 {
-                    // printf("continuing process\n");
                     kill(Running2->process->processPID, SIGCONT);
                     Running2->process->Status = resumed;
                     Running2->process->WaitingTime = (getClk() - Running2->process->arrivaltime) - (Running2->process->runtime - Running2->process->ReaminingTime);
                     fprintf(logfile, "At time %d process %d resumed arr %d total %d remain %d wait %d\n", getClk(), Running2->process->id, Running2->process->arrivaltime, Running2->process->runtime, Running2->process->ReaminingTime, Running2->process->WaitingTime);
                 }
             }
-            // something is running
-
             if (!isEmptyCnode(Running2) && count == quantum) // reached end of quantum
             {
                 printf("reached end of quantum, count %d at time %d\n", count, getClk());
-                // printf("rem time in sched %d\n", Running2->process->ReaminingTime);
                 if (Running2->process->ReaminingTime == 0)
                 {
                     int status;
                     int rec_child = waitpid(Running2->process->processPID, &status, 0);
-                    // printf("rec child %d\n", rec_child);
                     Running2->process->Status = finished;
 
                     processcount--;
@@ -363,10 +372,15 @@ int main(int argc, char *argv[])
                     wta += (float)(getClk() - Running2->process->arrivaltime) / Running2->process->runtime;
                     Running2->process->WaitingTime = (getClk() - Running2->process->arrivaltime) - (Running2->process->runtime - Running2->process->ReaminingTime);
                     fprintf(logfile, "At time %d process %d finished arr %d total %d remain 0 wait %d TA %d WTA %.2f\n", getClk(), Running2->process->id, Running2->process->arrivaltime, Running2->process->runtime, Running2->process->WaitingTime, getClk() - Running2->process->arrivaltime, (float)(getClk() - Running2->process->arrivaltime) / Running2->process->runtime);
+                    int SmallestPowerOfTwo = __nextPowerOf2(Running2->process->memsize);
+                    fprintf(memOutlog, "At time %d freed %d bytes from process %d from %d to %d\n",
+                            getClk(), Running2->process->memsize, Running2->process->id, Running2->process->memstart, Running2->process->memstart + SmallestPowerOfTwo - 1);
+                    bool rem = buddy_remove(Running2->process->memstart, Running2->process->memsize);
+                    if(rem == false) printf("        removing went wrong      ");
 
                     Running2 = NULL;
                     dequeueCQ(circularque); // free head (running is always at head) and advances head pointer if appropriate obviously
-                }
+                } 
                 else
                 {
                     if (!isEmptyCQ(circularque)) // switiching between process
@@ -379,13 +393,12 @@ int main(int argc, char *argv[])
                         int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
                         while (rec_value != -1)
                         {
+                            if (previd == message.process.id) break;
+                            previd = message.process.id;
                             printf("received: %d at time %d \n", message.process.id, getClk());
                             utilization += message.process.runtime;
-
                             node *new = newnode(message.process.id, message.process.priority,
-                                                message.process.arrival, message.process.runtime, waiting);
-
-                            // CNode* newcnode = newNodeRR(new); //enqueue takes node not cnode
+                                                message.process.arrival, message.process.runtime, message.process.memsize, waiting);
                             enqueueCQ(circularque, new);
 
                             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
@@ -395,8 +408,19 @@ int main(int argc, char *argv[])
                         advanceCQhead(circularque); // move head once
                         // if only one process then it will switch to itself
                     }
+                    else
+                    {
+                        count = 0;
+                        quantum = atoi(argv[2]);
+                        if (Running2->process->ReaminingTime < quantum)
+                        {
+                            quantum = Running2->process->ReaminingTime;
+                        }
+                    }
                 }
             }
+            fflush(memOutlog); 
+            fflush(logfile);
         }
 
         destroyCQ(circularque);
@@ -407,7 +431,7 @@ int main(int argc, char *argv[])
         utilization *= 100;
     }
 
-    if (atoi(argv[1]) == 4) // Multiple level Feedback Loop
+    if (atoi(argv[1]) == MFL) // Multiple level Feedback Loop
     {
         // printf("starting mlfl \n");
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
@@ -425,26 +449,27 @@ int main(int argc, char *argv[])
         int currentchain;
         // printf("before construtor\n");
         MLFL *mlfl = newMLFL();
+        int previd;
         printf("args %s %s %s \n", argv[1], argv[2], argv[3]);
-        initClk();
+        
         while (processcount > 0)
         {
-            while (getClk() < 1)
-                ;
+            while (getClk() < 1){}
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             
-                    int previd = -10;
+                    previd = -10;
                     while (rec_value != -1)
                     {
+                        if (previd == message.process.id) break;
+                        previd = message.process.id;
+
                         printf("received: %d at time %d \n", message.process.id, getClk());
                         utilization += message.process.runtime;
 
                         node *new = newnode(message.process.id, message.process.priority,
-                                            message.process.arrival, message.process.runtime, waiting);
-                                            if (previd == message.process.id) break;
-                        int previd = message.process.id;
-
+                                                message.process.arrival, message.process.runtime, message.process.memsize, waiting);
+                        
                         enqueueMLFL(mlfl, new);
 
                         rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
@@ -678,17 +703,18 @@ int main(int argc, char *argv[])
                     fprintf(logfile, "At time %d process %d stopped arr %d total %d remain %d wait %d\n", getClk(), Running3->process->id, Running3->process->arrivaltime, Running3->process->runtime, Running3->process->ReaminingTime, Running3->process->WaitingTime);
 
                     int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                    int previd = -10;
+            
                     while (rec_value != -1)
                     {
+                        if (previd == message.process.id) break;
+                        previd = message.process.id;
+
                         printf("received: %d at time %d \n", message.process.id, getClk());
                         utilization += message.process.runtime;
 
                         node *new = newnode(message.process.id, message.process.priority,
-                                            message.process.arrival, message.process.runtime, waiting);
-                                            if (previd == message.process.id) break;
-                        int previd = message.process.id;
-
+                                                message.process.arrival, message.process.runtime, message.process.memsize, waiting);
+                        
                         enqueueMLFL(mlfl, new);
 
                         rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
@@ -708,7 +734,8 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-            // printf("after third if statement\n");
+            fflush(memOutlog); 
+            fflush(logfile);
         }
         destroymlfl(mlfl);
 

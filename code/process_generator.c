@@ -104,6 +104,8 @@ int main(int argc, char *argv[])
     }
 
     pause(); // why?
+    //int stat_loc;
+    //int temp_pid = wait(&stat_loc);
     // releasing communication with the clock module
     destroyClk(1);
 

@@ -78,7 +78,7 @@ void destroyClk(bool terminateAll)
 
 typedef enum Scheduling_Algorithm
 {
-    SJF,
+    SJF = 1,
     HPF,
     RR,
     MFL

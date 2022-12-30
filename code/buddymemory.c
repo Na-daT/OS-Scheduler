@@ -28,6 +28,7 @@ when creating
   getClk(), Running->process->memsize, Running->process->id, Running->process->memstart, Running->process->memstart + NextPowerOfTwo - 1);
 
 when deleting
+  int SmallestPowerOfTwo = __nextPowerOf2(Running2->process->memsize);
   fprintf(memOutlog, "At time %d freed %d bytes from process %d from %d to %d\n",
         getClk(), Running->process->memsize, Running->process->id, Running->process->memstart, Running->process->memstart + SmallestPowerOfTwo - 1);
 */
@@ -272,7 +273,7 @@ void buddy_start() {
 //for debugging all done :)
 
 /*void main() {
-    //corner cases insert 1
+    
     buddy_start();
     std::cout << "allocated" << std::endl;
     std::cout << " hmm1 " << buddy_insert(300) << std::endl << std::endl;
