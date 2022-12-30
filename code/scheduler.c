@@ -66,7 +66,6 @@ int main(int argc, char *argv[])
         while (getClk() < 1) {}
         while (processcount > 0)
         {
-            while (getClk() < 1) {}
             struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
 
