@@ -31,6 +31,10 @@ when deleting
   int SmallestPowerOfTwo = __nextPowerOf2(Running2->process->memsize);
   fprintf(memOutlog, "At time %d freed %d bytes from process %d from %d to %d\n",
         getClk(), Running->process->memsize, Running->process->id, Running->process->memstart, Running->process->memstart + SmallestPowerOfTwo - 1);
+
+when failing to allocate something
+fprintf(memOutlog, "At time %d failed to allocate %d bytes for process %d due to lack of space\n",
+                            getClk(), Running2->process->memsize, Running2->process->id);
 */
 
 /*
