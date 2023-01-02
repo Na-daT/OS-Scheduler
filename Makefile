@@ -5,7 +5,7 @@ build:
 	gcc process.c -o process.out
 
 clean:
-	rm -f *.out  processes.txt scheduler.perf
+	rm -f *.out *.perf processes.txt
 
 all: clean build
 

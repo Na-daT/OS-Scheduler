@@ -36,9 +36,17 @@ FILE *memOutlog;
 
 int main(int argc, char *argv[])
 {
+    int algorithm_id = atoi(argv[1]);
+    processcount = atoi(argv[3]);
+    quantum = atoi(argv[2]);
+
+
     // creating the message queue
     int keyid = ftok(".", 65);
     int msqid = msgget(keyid, 0666 | IPC_CREAT);
+
+    struct msgbuffer message;
+
 
     // open the output file
     logfile = fopen("./scheduler.log", "w");
@@ -54,26 +62,22 @@ int main(int argc, char *argv[])
 
     // TODO: implement the scheduler.
 
-    ///////////////////////////////// SJF //non premitave
-    if (atoi(argv[1]) == SJF)
+    ///////////////////////////////// SJF (Non-preemptive)
+    if (algorithm_id == SJF)
     {
-        // printf("starting sjf \n");
         signal(SIGUSR1, ProcessTerminated2);
-        signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
-        // so its useless for this and should be ignored
-        processcount = atoi(argv[3]);
-        QNode *pqHead = NULL; // headofqueue
-        // QNode* Running = NULL; // process currently running
+        signal(SIGUSR2, SIG_IGN); // sigusr2 is used in Round Robin, so it's ignored
+        QNode *pqHead = NULL; // head of queue
+
         while (getClk() < 1) {}
         while (processcount > 0)
         {
-            struct msgbuffer message;
-            int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+            int received_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT); //msgtyp = 0, accepts all messages
 
-            while (rec_value != -1) // get all process that arrive at current clk time
+            while (received_value != -1) // if received_value is -1 that means no message(process) was received this clock tick
             {
-
-                utilization += message.process.runtime;
+                // get all processes that arrive at current clock tick
+                utilization += message.process.runtime; //add the received process runtime to utilization
                 printf("received: %d at time %d \n", message.process.id, getClk());
 
                 node *new = newnode(message.process.id, message.process.priority,
@@ -85,7 +89,7 @@ int main(int argc, char *argv[])
                 else
                     push(&pqHead, newqnode);
 
-                rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
+                received_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             }
 
             int flag = 0;
@@ -96,7 +100,6 @@ int main(int argc, char *argv[])
                 flag = 1;
             }
 
-            // if (isEmptyQNODE(&Running4) && !isEmptyQNODE(&pqHead))
             if (!isEmptyQNODE(&Running4) && flag == 1)
             {
                 // fork and take id of process
@@ -114,7 +117,7 @@ int main(int argc, char *argv[])
                     exit(-1);
                 }
                 printf("process %d started at time %d \n", Running4->process->id, getClk());
-                 Running4->process->processPID = pid;
+                Running4->process->processPID = pid;
                 Running4->process->Status = started;
                 Running4->process->WaitingTime = (getClk() - Running4->process->arrivaltime) - (Running4->process->runtime - Running4->process->ReaminingTime);
                 fprintf(logfile, "At time %d process %d started arr %d total %d remain %d wait %d\n", getClk(), Running4->process->id, Running4->process->arrivaltime, Running4->process->runtime, Running4->process->ReaminingTime, Running4->process->WaitingTime);
@@ -124,24 +127,18 @@ int main(int argc, char *argv[])
             fflush(memOutlog); 
             fflush(logfile);
         }
-
+        //TODO: figure out how SJF is supposed to exit loop
         destroyPQ(pqHead);
-
-        wta /= atoi(argv[3]);
-        avg_wait /= atoi(argv[3]);
-        utilization /= getClk();
-        utilization *= 100;
     }
 
-    if (atoi(argv[1]) == HPF) // hpf Preemptive
+    if (algorithm_id == HPF) // HPF (Preemptive)
     {
         // printf("starting hpf \n");
         signal(SIGUSR1, ProcessTerminated);
-        signal(SIGUSR2, SIG_IGN); // sigusr2 is used in roundrobin
-        // so its useless for this and should be ignored
-        processcount = atoi(argv[3]);
+        signal(SIGUSR2, SIG_IGN); // sigusr2 is used in round-robin
+        // so it's useless for this and should be ignored
         QNode *pqHead = NULL; // head of prioqueue
-        
+
         // QNode* Running = NULL; // process currently running
         int last_runclk = 0;
         while (getClk() < 1) {}
@@ -150,9 +147,8 @@ int main(int argc, char *argv[])
             // IMPORTANT TO DO
             // MAKE SURE PRIOQUEUE IS USING priority AS PRIORITY VALUE
 
-            struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-            
+
             int process_switched_flag = 0;
             //int newproccess_arrival_flag = 0;
             while (rec_value != -1) // get all process that arrive at current clk time
@@ -169,12 +165,12 @@ int main(int argc, char *argv[])
                     pqHead = newqnode;
                 else
                     push(&pqHead, newqnode);
-                
-                
+
+
                 //newproccess_arrival_flag = 1;
                 rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
-                
-                
+
+
             }
 
             process_switched_flag = 0;
@@ -185,10 +181,10 @@ int main(int argc, char *argv[])
                 // printf("before dequeuing %d\n", ReadyQ->process.id);
                 Running = pqHead;
                 pop(&pqHead);
-                
+
                 // printf("after dequeuing running is empty %d %d is empty q %d \n", isEmpty(&Running), Running->process.id, isEmpty(&ReadyQ));
                 process_switched_flag = 1;
-                
+
             }
 
             else if (process_switched_flag == 0 && !isEmptyQNODE(&Running) && !isEmptyQNODE(&pqHead))
@@ -209,7 +205,7 @@ int main(int argc, char *argv[])
                     pop(&pqHead);
                     //newproccess_arrival_flag = 0;
                     process_switched_flag = 1;
-                    
+
                 }
             }
 
@@ -217,7 +213,7 @@ int main(int argc, char *argv[])
             {
                 if (Running->process->processPID == -1) // this proccess has yet to be created
                 {
-                    
+
                     // fork and take id of process
                     int pid = fork();
                     if (pid == 0)
@@ -253,35 +249,29 @@ int main(int argc, char *argv[])
                     fprintf(logfile, "At time %d process %d resumed arr %d total %d remain %d wait %d\n", getClk(), Running->process->id, Running->process->arrivaltime, Running->process->runtime, Running->process->ReaminingTime, Running->process->WaitingTime);
                 }
             }
-            fflush(memOutlog); 
+            fflush(memOutlog);
             fflush(logfile);
         }
 
-        wta /= atoi(argv[3]);
-        avg_wait /= atoi(argv[3]);
-        utilization /= getClk();
-        utilization *= 100;
         printf("destroying\n");
         destroyPQ(finishedque);
         printf("done destroying\n");
     }
 
-    if (atoi(argv[1]) == RR) // Round Robin (RR)
+    if (algorithm_id == RR) // Round Robin
     {
-        signal(SIGUSR2, clockchangeRR);
-        signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
+        signal(SIGUSR1, SIG_IGN);
+        // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
-        // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
-        
-        processcount = atoi(argv[3]);
+        signal(SIGUSR2, clockchangeRR);
+        // process notifies scheduler of clk changes
+
+
         circular_queue *circularque = create_circular_queue(processcount);
-        int quantum = atoi(argv[2]);
         int previd;
-        
         while (processcount > 0)
         {
             while (getClk() < 1) {}
-            struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             previd = -10;
 
@@ -424,22 +414,15 @@ int main(int argc, char *argv[])
         }
 
         destroyCQ(circularque);
-
-        wta /= atoi(argv[3]);
-        avg_wait /= atoi(argv[3]);
-        utilization /= getClk();
-        utilization *= 100;
     }
 
-    if (atoi(argv[1]) == MFL) // Multiple level Feedback Loop
+    if (algorithm_id == MFL) // Multiple level Feedback Loop
     {
         // printf("starting mlfl \n");
         signal(SIGUSR1, SIG_IGN); // won't use on termination here, handled internally on quantum end
         // don't rely on process sending signal each quantum, process will be sent a pause/cont each quantum or terminate when rem time = 0
         // PROCESS NOTIFIES SCHEDULAR OF CLK CHANGES
         signal(SIGUSR2, clockchangeMLFL);
-        processcount = atoi(argv[3]);
-        int quantum = atoi(argv[2]);
         printf("quantum %d \n", quantum);
 
         // MLFLNode* Running3;
@@ -455,7 +438,6 @@ int main(int argc, char *argv[])
         while (processcount > 0)
         {
             while (getClk() < 1){}
-            struct msgbuffer message;
             int rec_value = msgrcv(msqid, &message, sizeof(message.process), 0, IPC_NOWAIT);
             
                     previd = -10;
@@ -738,12 +720,14 @@ int main(int argc, char *argv[])
             fflush(logfile);
         }
         destroymlfl(mlfl);
-
-        wta /= atoi(argv[3]);
-        avg_wait /= atoi(argv[3]);
-        utilization /= getClk();
-        utilization *= 100;
     }
+
+
+    wta /= atoi(argv[3]);
+    avg_wait /= atoi(argv[3]);
+    utilization /= getClk();
+    utilization *= 100;
+
     printf("exiting scheduler at time %d\n", getClk());
 
     // printing to .perf file

@@ -13,7 +13,7 @@ enum status
     finished = 5
 };
 
-// Node
+// Node: simulates a process
 typedef struct node
 {
     int id;
@@ -28,8 +28,6 @@ typedef struct node
 
     enum status Status;
     // Status = waiting;
-    int quantum; // RR
-
     int schedpid;
     int memsize;        // memory size taken by process
     int memstart;       // index of starting location in memory for process
@@ -41,14 +39,12 @@ typedef struct node
 
 typedef struct QNode
 {
-    // int data;
     node *process;
     struct QNode *next;
 } QNode;
 
 typedef struct CNode
 {
-    // int data;
     node *process;
     struct CNode *next;
     struct CNode *prev;
@@ -73,7 +69,6 @@ node *newnode(int id, int Processpriority, int arrival, int runtime,
     temp->WaitingTime = 0;
     temp->Status = status;
     temp->schedpid = 0;
-
     temp->memsize = Memsize;
     temp->memstart = -1;
 
