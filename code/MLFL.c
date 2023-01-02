@@ -441,7 +441,7 @@ QNode *PeekMLFLChainedList(int linkedListindex, MLFL *mlfl)
 
 void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
 {
-    if(level == NULL)
+    if (level == NULL)
         return;
     printf("clearfinishedprocesses_in_a_priolevel\n");
     if (level && level->process->Status == finished)
@@ -450,9 +450,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
         switch (level->process->processpriority)
         {
         case 0:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist0 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -462,9 +463,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 break;
             }
         case 1:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist1 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -477,9 +479,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 2:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist2 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -492,9 +495,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 3:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist3 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -507,9 +511,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 4:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist4 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -522,9 +527,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 5:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist5 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -537,9 +543,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 6:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist6 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -552,9 +559,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 7:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist7 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -567,9 +575,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 8:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist8 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -582,9 +591,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 9:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist9 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -597,9 +607,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
             // level = NULL;
             // break;
         case 10:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist10 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -607,7 +618,7 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 mlfl->linkedlist10 = NULL;
                 level = NULL;
                 break;
-            }   
+            }
             // mlfl->linkedlist10 = NULL;
             // level = NULL;
             // break;
@@ -633,8 +644,8 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
         if (temp->process->Status == finished)
         {
             prev->next = temp->next;
-            //freeinsideMLFL(temp);
-            //free(temp);
+            // freeinsideMLFL(temp);
+            // free(temp);
             return;
         }
         prev = temp;
@@ -657,7 +668,7 @@ void clearfinishedprocesses(MLFL *mlfl, int prio)
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2, mlfl);
     if (prio == 3)
     {
-        if(mlfl->linkedlist3 == NULL)
+        if (mlfl->linkedlist3 == NULL)
             printf("linked list 3 is null\n");
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3, mlfl);
     }
