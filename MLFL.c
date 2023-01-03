@@ -1,23 +1,9 @@
-// #include "linkedlist.c"
 #ifndef pqueue
 #define pqueue
-#include "data_structures/pqueue.c"
+#include "pqueue.c"
 #endif
-typedef struct chained_linkedlist
-{
-    // linkedlist* listHead;
-    QNode *Head;
-    struct chained_linkedlist *next;
-    // int baseprio;
-} chained_linkedlist;
 
-chained_linkedlist *create_chainedlinkedlist(QNode **list, chained_linkedlist *nextcll)
-{
-    chained_linkedlist *cll = (chained_linkedlist *)malloc(sizeof(chained_linkedlist));
-    cll->Head = *list;
-    cll->next = nextcll;
-    return cll;
-}
+
 
 typedef struct MLFL
 {
@@ -33,17 +19,6 @@ typedef struct MLFL
     QNode *linkedlist9;
     QNode *linkedlist10;
 
-    // chained_linkedlist *Head0; // use an array with currentchain_index for each instead?
-    // chained_linkedlist *Head1;
-    // chained_linkedlist *Head2;
-    // chained_linkedlist *Head3;
-    // chained_linkedlist *Head4;
-    // chained_linkedlist *Head5;
-    // chained_linkedlist *Head6;
-    // chained_linkedlist *Head7;
-    // chained_linkedlist *Head8;
-    // chained_linkedlist *Head9;
-    // chained_linkedlist *Head10;
 
 } MLFL;
 
@@ -53,49 +28,8 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
     // head1 0 process
     // head2 1 process //corner case
     // a priority level in the middle with no processes
-    // printf("grabbing next node\n");
-    // if (currentlyrunning != NULL && (*currentlyrunning)->next)
-    // { // first null
-    //     printf("in first null\n");
-    //     currentlyrunning = &((*currentlyrunning)->next);
-    //     return;
-    // }
-    // else
-    // {
-    //     printf("in else conf in grabnextnode\n");
-    //     while (currentchain->next)
-    //     { // second null
-    //         printf("stuck in while of second null\n");
-    //         currentchain = currentchain->next;
-    //         if (currentchain->Head != NULL)
-    //         {
-    //             currentlyrunning = &(currentchain->Head);
-    //             return;
-    //         }
-    //     }
-    // }
-    // currentlyrunning = NULL;
-    // printf("hit double null\n");
-    // return;
-    // if currentlyrunning returns null then we have hit the 'double null' and then we are at the end of all chains
-    // and we should run lesser prio chain next ex: head0 -> head1 (using switch case inside scheduler part)
-
-    // if (currentlyrunning != NULL && currentlyrunning->next != NULL)
-    // { // first null
-    //     printf("in first null\n");
-    //     currentlyrunning = currentlyrunning->next;
-
-    //     if (currentlyrunning != NULL && currentlyrunning->next == NULL)
-    //     {
-    //         printf("in if loop dec currentchain\n");
-    //         (*currentchain)--;
-    //     }
-    //     // printf("process id after first null: %d\n", currentlyrunning->process->id);
-    //     printf("currentchain after first null: %d\n", *currentchain);
-    //     return currentlyrunning;
-    // }
-    // else
-    // {
+    if((*currentchain) == -1) {(*currentchain)=0; return NULL;}
+   
     while (*currentchain > -1)
     {
         printf("while loop in grabnextnode\n");
@@ -108,12 +42,13 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
                 return mlfl->linkedlist0;
             }
             else
+                if((*currentchain) == -1) (*currentchain)=0;
                 return NULL;
         case 1:
             if (mlfl->linkedlist1 != NULL)
             {
                 printf("grabnext node in case 1 \n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist1;
             }
             else
@@ -125,7 +60,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist2 != NULL)
             {
                 printf("grabnext node in case 2\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist2;
             }
             else
@@ -137,7 +72,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist3 != NULL)
             {
                 printf("grabnext node in case3\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist3;
             }
             else
@@ -149,7 +84,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist4 != NULL)
             {
                 printf("grabnext node in case 4\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist4;
             }
             else
@@ -162,7 +97,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             {
                 printf("grabnext node in case 5\n");
                 printf("process id: %d\n", mlfl->linkedlist5->process->id);
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist5;
             }
             else
@@ -174,7 +109,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist6 != NULL)
             {
                 printf("grabnext node in case 6\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist6;
             }
             else
@@ -186,7 +121,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist7 != NULL)
             {
                 printf("grabnext node in case 7\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist7;
             }
             else
@@ -198,7 +133,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist8 != NULL)
             {
                 printf("grabnext node in case 8\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist8;
             }
             else
@@ -210,7 +145,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist9 != NULL)
             {
                 printf("grabnext node in case 9\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist9;
             }
             else
@@ -222,7 +157,7 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             if (mlfl->linkedlist10 != NULL)
             {
                 printf("grabnext node in case10\n");
-                (*currentchain)--;
+                //(*currentchain)--;
                 return mlfl->linkedlist10;
             }
             else
@@ -233,8 +168,6 @@ QNode *grabnextnode_mlfl(int *currentchain, QNode *currentlyrunning, MLFL *mlfl)
             }
         }
     }
-    //(*currentchain) = 10;
-    //}
 }
 
 // head0 = linkedlist0
@@ -257,17 +190,7 @@ MLFL *newMLFL()
     mlfl->linkedlist8 = NULL;
     mlfl->linkedlist9 = NULL;
     mlfl->linkedlist10 = NULL;
-    // mlfl->Head0 = create_chainedlinkedlist(&(mlfl->linkedlist0), NULL);
-    // mlfl->Head1 = create_chainedlinkedlist(&(mlfl->linkedlist1), (mlfl->Head0));
-    // mlfl->Head2 = create_chainedlinkedlist(&(mlfl->linkedlist2), (mlfl->Head1));
-    // mlfl->Head3 = create_chainedlinkedlist(&(mlfl->linkedlist3), (mlfl->Head2));
-    // mlfl->Head4 = create_chainedlinkedlist(&(mlfl->linkedlist4), (mlfl->Head3));
-    // mlfl->Head5 = create_chainedlinkedlist(&(mlfl->linkedlist5), (mlfl->Head4));
-    // mlfl->Head6 = create_chainedlinkedlist(&(mlfl->linkedlist6), (mlfl->Head5));
-    // mlfl->Head7 = create_chainedlinkedlist(&(mlfl->linkedlist7), (mlfl->Head6));
-    // mlfl->Head8 = create_chainedlinkedlist(&(mlfl->linkedlist8), (mlfl->Head7));
-    // mlfl->Head9 = create_chainedlinkedlist(&(mlfl->linkedlist9), (mlfl->Head8));
-    // mlfl->Head10 = create_chainedlinkedlist(&(mlfl->linkedlist10), (mlfl->Head9));
+
     return mlfl;
 }
 
@@ -285,17 +208,6 @@ void destroymlfl(MLFL *mlfl)
     destroyPQ(mlfl->linkedlist9);
     destroyPQ(mlfl->linkedlist10);
 
-    // free(mlfl->Head0);
-    // free(mlfl->Head1);
-    // free(mlfl->Head2);
-    // free(mlfl->Head3);
-    // free(mlfl->Head4);
-    // free(mlfl->Head5);
-    // free(mlfl->Head6);
-    // free(mlfl->Head7);
-    // free(mlfl->Head8);
-    // free(mlfl->Head9);
-    // free(mlfl->Head10);
 
     free(mlfl);
 }
@@ -441,7 +353,7 @@ QNode *PeekMLFLChainedList(int linkedListindex, MLFL *mlfl)
 
 void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
 {
-    if(level == NULL)
+    if (level == NULL)
         return;
     printf("clearfinishedprocesses_in_a_priolevel\n");
     if (level && level->process->Status == finished)
@@ -450,9 +362,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
         switch (level->process->processpriority)
         {
         case 0:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist0 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -462,9 +375,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 break;
             }
         case 1:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist1 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -473,13 +387,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist1 = NULL;
-            // level = NULL;
-            // break;
+            
         case 2:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist2 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -488,13 +401,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist2 = NULL;
-            // level = NULL;
-            // break;
+         
         case 3:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist3 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -503,13 +415,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist3 = NULL;
-            // level = NULL;
-            // break;
+            
         case 4:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist4 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -518,13 +429,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist4 = NULL;
-            // level = NULL;
-            // break;
+            
         case 5:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist5 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -533,13 +443,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist5 = NULL;
-            // level = NULL;
-            // break;
+            
         case 6:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist6 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -548,13 +457,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist6 = NULL;
-            // level = NULL;
-            // break;
+            
         case 7:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist7 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -563,13 +471,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist7 = NULL;
-            // level = NULL;
-            // break;
+            
         case 8:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist8 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -578,13 +485,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist8 = NULL;
-            // level = NULL;
-            // break;
+            
         case 9:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist9 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -593,13 +499,12 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 level = NULL;
                 break;
             }
-            // mlfl->linkedlist9 = NULL;
-            // level = NULL;
-            // break;
+            
         case 10:
-            if(level->next != NULL)
+            if (level->next != NULL)
             {
                 mlfl->linkedlist10 = level->next;
+                level = NULL;
                 break;
             }
             else
@@ -607,18 +512,10 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
                 mlfl->linkedlist10 = NULL;
                 level = NULL;
                 break;
-            }   
-            // mlfl->linkedlist10 = NULL;
-            // level = NULL;
-            // break;
+            }
+            
         }
-        // printf("clearfinishedprocesses_in_a_priolevel\n");
-        // printf("level->process->id %d\n", level->process->id);
-
-        // printf("clearing head of list");
-        // // QNode *temp = level;
-        //  level = temp->next;
-        //  freeinsideMLFL(level);
+        
         free(level);
         printf("done clearfinishedprocesses_in_a_priolevel\n");
         if (level == NULL)
@@ -633,8 +530,8 @@ void clearfinishedprocesses_in_a_priolevel(QNode *level, MLFL *mlfl)
         if (temp->process->Status == finished)
         {
             prev->next = temp->next;
-            //freeinsideMLFL(temp);
-            //free(temp);
+            // freeinsideMLFL(temp);
+            // free(temp);
             return;
         }
         prev = temp;
@@ -657,7 +554,7 @@ void clearfinishedprocesses(MLFL *mlfl, int prio)
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist2, mlfl);
     if (prio == 3)
     {
-        if(mlfl->linkedlist3 == NULL)
+        if (mlfl->linkedlist3 == NULL)
             printf("linked list 3 is null\n");
         clearfinishedprocesses_in_a_priolevel(mlfl->linkedlist3, mlfl);
     }

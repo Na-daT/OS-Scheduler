@@ -1,0 +1,20 @@
+#At time x a l l o c a t e d y bytes f o r process z from i to j
+At time 1 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 1 allocated 1 bytes for process 2 from 0 to 0
+At time 5 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 5 allocated 1 bytes for process 3 from 1 to 1
+At time 9 allocated 1 bytes for process 4 from 2 to 2
+At time 13 allocated 1 bytes for process 5 from 3 to 3
+At time 21 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 35 freed 1 bytes from process 2 from 0 to 0
+At time 35 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 37 freed 1 bytes from process 3 from 1 to 1
+At time 39 freed 1 bytes from process 4 from 2 to 2
+At time 41 freed 1 bytes from process 5 from 3 to 3
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space
+At time 41 failed to allocate 100000 bytes for process 1 due to lack of space

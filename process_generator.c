@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 4)
     {
-        printf("Error: Missing arguments!");
+        printf("wrong arg count\n");
         return 0;
     }
     // assigning a handler to clear ipc resources at termination

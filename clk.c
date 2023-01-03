@@ -7,7 +7,7 @@
 
 #ifndef NODE_H
 #define NODE_H
-#include "data_structures/node.h"
+#include "node.h"
 #endif 
 
 int shmid;

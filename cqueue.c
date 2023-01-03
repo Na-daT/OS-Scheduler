@@ -33,10 +33,15 @@ void enqueueCQ(circular_queue *cq, node *data)
 
     if (cq->Head != NULL)
     {
-        new_node->prev = cq->Head->prev;
         new_node->next = cq->Head;
+        new_node->prev = cq->Head->prev;
         cq->Head->prev->next = new_node;
         cq->Head->prev = new_node;
+
+        //new_node->prev = cq->Head->prev;
+        //new_node->next = cq->Head;
+        //cq->Head->prev->next = new_node;
+        //cq->Head->prev = new_node;
     }
     else
     {
